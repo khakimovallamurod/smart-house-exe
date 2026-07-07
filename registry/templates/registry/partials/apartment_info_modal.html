@@ -1,15 +1,15 @@
 <div class="modal-backdrop" data-modal-backdrop>
     <div class="modal-panel apartment-info-panel">
-        <div class="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200 bg-white/90 p-5 backdrop-blur">
+        <div class="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200 bg-white/90 p-3 backdrop-blur">
             <div>
-                <p class="text-sm text-[#5C5E62]">{{ room.house.house_number }}-uy · {{ room.entrance_number }}-podyezd</p>
-                <h2 class="text-xl font-medium">{{ room.room_number }}-xonadon ma'lumotlari</h2>
+                <p class="text-xs text-[#5C5E62]">{{ room.house.house_number }}-uy · {{ room.entrance_number }}-podyezd</p>
+                <h2 class="text-base font-medium">{{ room.room_number }}-xonadon ma'lumotlari</h2>
             </div>
             <button class="icon-btn" data-modal-close><i class="bi bi-x-lg"></i></button>
         </div>
 
         {% if residents %}
-        <div class="grid gap-5 p-5 lg:grid-cols-[280px_1fr]">
+        <div class="grid gap-2 p-3 lg:grid-cols-[180px_1fr]">
             <aside class="resident-switcher">
                 {% for resident in residents %}
                 <button class="resident-switch {% if forloop.first %}active{% endif %}" type="button" data-resident-target="resident-{{ resident.pk }}">
@@ -39,6 +39,7 @@
                     <div class="info-grid">
                         <div><span>Tug'ilgan sana</span><strong>{{ resident.birth_date|date:"d.m.Y"|default:"-" }}</strong></div>
                         <div><span>Jinsi</span><strong>{{ resident.get_gender_display|default:"-" }}</strong></div>
+                        <div><span>Qarindoshlik</span><strong>{{ resident.get_relationship_display|default:"-" }}</strong></div>
                         <div><span>Pasport seriyasi</span><strong>{{ resident.passport|default:"-" }}</strong></div>
                     </div>
 

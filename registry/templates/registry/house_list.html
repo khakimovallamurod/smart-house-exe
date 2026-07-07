@@ -11,9 +11,9 @@
             <span class="house-icon"><i class="bi bi-house-door"></i></span>
         </div>
         <div class="house-metrics compact">
-            <span><strong>{{ house.entrance_count }}</strong> podyezd</span>
-            <span><strong>{{ house.room_count }}</strong> xonadon</span>
-            <span class="danger"><strong>{{ house.empty_rooms_count }}</strong> bo'sh</span>
+            <span class="danger"><strong>{{ house.serious_attention }}</strong> og'ir nazorat</span>
+            <span class="danger"><strong>{{ house.penal_institution_count }}</strong> JIEM</span>
+            <span class="good"><strong>{{ house.social_assistance_count }}</strong> ijtimoiy yordam</span>
         </div>
         <div class="mt-auto flex items-center justify-between gap-3">
             <p class="text-xs text-[#5C5E62]">{{ house.created_at|date:"d.m.Y" }}</p>

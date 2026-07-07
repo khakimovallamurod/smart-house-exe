@@ -120,11 +120,17 @@ function openSwalConfirm(message, onConfirm) {
 
 async function drawCharts() {
   const pie = document.getElementById("pieChart");
-  if (!pie) return;
-  const data = await fetch("/api/stats/").then((response) => response.json());
-  drawPie(pie, data.pie, ["#047857", "#be123c"]);
-  drawLine(document.getElementById("lineChart"), data.line, "#3E6AE1");
-  drawBar(document.getElementById("barChart"), data.bar, data.bar_labels, ["#171A20", "#047857", "#be123c", "#3E6AE1"]);
+  if (pie) {
+    const data = await fetch("/api/stats/").then((response) => response.json());
+    drawPie(pie, data.pie, ["#047857", "#be123c"]);
+    drawLine(document.getElementById("lineChart"), data.line, "#3E6AE1");
+    drawBar(document.getElementById("barChart"), data.bar, data.bar_labels, ["#171A20", "#047857", "#be123c", "#3E6AE1"]);
+  }
+  const entranceRisk = document.getElementById("entranceRiskChart");
+  if (entranceRisk) {
+    const values = JSON.parse(entranceRisk.dataset.values || "[]");
+    drawLine(entranceRisk, values.length === 1 ? [0, values[0]] : values, "#be123c", entranceRisk.dataset.labelPrefix || "");
+  }
 }
 
 function drawPie(canvas, values, colors) {
@@ -142,16 +148,20 @@ function drawPie(canvas, values, colors) {
   });
 }
 
-function drawLine(canvas, values, color) {
+function drawLine(canvas, values, color, labelPrefix = "") {
   const ctx = canvas.getContext("2d");
   const width = canvas.width = canvas.offsetWidth;
-  const height = canvas.height = 190;
+  const cssHeight = Number.parseInt(getComputedStyle(canvas).height, 10);
+  const height = canvas.height = cssHeight || Number(canvas.getAttribute("height")) || 190;
   const max = Math.max(...values, 1);
+  const bottomPad = labelPrefix ? 18 : 20;
+  const topPad = 16;
+  const chartHeight = Math.max(48, height - topPad - bottomPad);
   ctx.clearRect(0, 0, width, height);
   ctx.strokeStyle = "#e5e7eb";
   ctx.lineWidth = 1;
   for (let step = 0; step < 4; step += 1) {
-    const y = 24 + step * 40;
+    const y = topPad + step * (chartHeight / 3);
     ctx.beginPath();
     ctx.moveTo(20, y);
     ctx.lineTo(width - 20, y);
@@ -162,17 +172,26 @@ function drawLine(canvas, values, color) {
   ctx.beginPath();
   (values.length ? values : [0]).forEach((value, index, arr) => {
     const x = 20 + index * ((width - 40) / Math.max(arr.length - 1, 1));
-    const y = height - 20 - (value / max) * 140;
+    const y = height - bottomPad - (value / max) * chartHeight;
     index ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
   });
   ctx.stroke();
   (values.length ? values : [0]).forEach((value, index, arr) => {
     const x = 20 + index * ((width - 40) / Math.max(arr.length - 1, 1));
-    const y = height - 20 - (value / max) * 140;
+    const y = height - bottomPad - (value / max) * chartHeight;
     ctx.beginPath();
     ctx.arc(x, y, 4, 0, Math.PI * 2);
     ctx.fillStyle = color;
     ctx.fill();
+    if (labelPrefix) {
+      ctx.fillStyle = "#5C5E62";
+      ctx.font = "12px Arial";
+      ctx.textAlign = "center";
+      ctx.fillText(`${labelPrefix}${index + 1}`, x, height - 4);
+      ctx.fillStyle = "#171A20";
+      ctx.font = "600 12px Arial";
+      ctx.fillText(String(value), x, Math.max(14, y - 8));
+    }
   });
 }
 

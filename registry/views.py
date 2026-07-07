@@ -12,6 +12,32 @@ from .forms import HouseForm, ResidentBasicForm, ResidentOwnerForm, RoomStatusFo
 from .models import House, RelatedPerson, Resident, Room
 
 
+SERIOUS_CRIME_Q = (
+    Q(previously_convicted=True)
+    | Q(penal_institution=True)
+    | Q(probation=True)
+    | Q(administrative_supervision=True)
+    | Q(preventive_register=True)
+    | Q(drug_addiction_register=True)
+)
+SERIOUS_ROOM_Q = (
+    Q(residents__previously_convicted=True)
+    | Q(residents__penal_institution=True)
+    | Q(residents__probation=True)
+    | Q(residents__administrative_supervision=True)
+    | Q(residents__preventive_register=True)
+    | Q(residents__drug_addiction_register=True)
+)
+SERIOUS_HOUSE_Q = (
+    Q(rooms__residents__previously_convicted=True)
+    | Q(rooms__residents__penal_institution=True)
+    | Q(rooms__residents__probation=True)
+    | Q(rooms__residents__administrative_supervision=True)
+    | Q(rooms__residents__preventive_register=True)
+    | Q(rooms__residents__drug_addiction_register=True)
+)
+
+
 def dashboard(request):
     houses = House.objects.all()
     rooms = Room.objects.select_related("house")
@@ -29,6 +55,9 @@ def dashboard(request):
         "total_residents": residents.count(),
         "total_related_persons": RelatedPerson.objects.count(),
         "residents_with_violations": residents.filter(has_violation=True).count(),
+        "serious_attention": residents.filter(SERIOUS_CRIME_Q).distinct().count(),
+        "penal_institution_count": residents.filter(penal_institution=True).count(),
+        "social_assistance_count": residents.filter(needs_social_assistance=True).count(),
     }
     context = {
         "page_title": "Boshqaruv paneli",
@@ -41,6 +70,8 @@ def dashboard(request):
             ("Band xonadonlar", stats["occupied_rooms"], "green"),
             ("Bo'sh xonadonlar", stats["empty_rooms"], "red"),
             ("Jami a'zolar", stats["total_residents"], "blue"),
+            ("Og'ir nazorat", stats["serious_attention"], "red"),
+            ("Ijtimoiy yordam", stats["social_assistance_count"], "blue"),
         ],
     }
     return render(request, "registry/dashboard.html", context)
@@ -49,6 +80,9 @@ def dashboard(request):
 def house_list(request):
     houses = House.objects.annotate(
         occupied_rooms=Count("rooms", filter=Q(rooms__residents__isnull=False), distinct=True),
+        serious_attention=Count("rooms__residents", filter=SERIOUS_HOUSE_Q, distinct=True),
+        penal_institution_count=Count("rooms__residents", filter=Q(rooms__residents__penal_institution=True), distinct=True),
+        social_assistance_count=Count("rooms__residents", filter=Q(rooms__residents__needs_social_assistance=True), distinct=True),
     ).order_by("-created_at")
     paginator = Paginator(houses, 6)
     page_obj = paginator.get_page(request.GET.get("page"))
@@ -194,6 +228,7 @@ def house_detail(request, pk):
     rooms = house.rooms.annotate(
         resident_count=Count("residents", distinct=True),
         violation_count=Count("residents", filter=Q(residents__has_violation=True), distinct=True),
+        serious_count=Count("residents", filter=SERIOUS_ROOM_Q, distinct=True),
     )
     if query:
         rooms = rooms.filter(
@@ -208,11 +243,23 @@ def house_detail(request, pk):
     elif filter_value in [Room.LARGE, Room.MEDIUM, Room.SMALL]:
         rooms = rooms.filter(family_status=filter_value)
 
-    occupied = house.rooms.filter(residents__isnull=False).distinct().count()
+    house_residents = Resident.objects.filter(room__house=house)
     entrance_blocks = []
+    entrance_risk_values = []
     for entrance_number in range(1, house.entrance_count + 1):
         entrance_rooms = list(rooms.filter(entrance_number=entrance_number))
-        entrance_blocks.append({"number": entrance_number, "rooms": entrance_rooms})
+        serious_count = house_residents.filter(room__entrance_number=entrance_number).filter(SERIOUS_CRIME_Q).distinct().count()
+        penal_count = house_residents.filter(room__entrance_number=entrance_number, penal_institution=True).count()
+        social_count = house_residents.filter(room__entrance_number=entrance_number, needs_social_assistance=True).count()
+        entrance_risk_values.append(serious_count)
+        entrance_blocks.append({
+            "number": entrance_number,
+            "rooms": entrance_rooms,
+            "serious_count": serious_count,
+            "penal_count": penal_count,
+            "social_count": social_count,
+        })
+    max_entrance = max(entrance_blocks, key=lambda item: item["serious_count"], default=None)
     context = {
         "page_title": f"{house.house_number}-uy",
         "house": house,
@@ -220,13 +267,12 @@ def house_detail(request, pk):
         "entrance_blocks": entrance_blocks,
         "query": query,
         "filter_value": filter_value,
-        "occupied": occupied,
-        "empty": house.room_count - occupied,
-        "family_stats": {
-            "large": house.rooms.filter(family_status=Room.LARGE).count(),
-            "medium": house.rooms.filter(family_status=Room.MEDIUM).count(),
-            "small": house.rooms.filter(family_status=Room.SMALL).count(),
-        },
+        "serious_attention": house_residents.filter(SERIOUS_CRIME_Q).distinct().count(),
+        "penal_institution_count": house_residents.filter(penal_institution=True).count(),
+        "preventive_register_count": house_residents.filter(preventive_register=True).count(),
+        "social_assistance_count": house_residents.filter(needs_social_assistance=True).count(),
+        "max_entrance": max_entrance,
+        "entrance_risk_json": json.dumps(entrance_risk_values),
     }
     return render(request, "registry/house_detail.html", context)
 

@@ -30,7 +30,7 @@ USE_HTTPS_SECURITY = os.environ.get("DJANGO_USE_HTTPS_SECURITY", "0") == "1"
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DJANGO_DEBUG", "1") == "1"
 
-ALLOWED_HOSTS = ["127.0.0.1", "localhost", "testserver"]
+ALLOWED_HOSTS = ["127.0.0.1", "localhost", "dastur.sampc.uz", "www.dastur.sampc.uz"]
 CSRF_TRUSTED_ORIGINS = [
     "http://127.0.0.1",
     "http://127.0.0.1:8000",

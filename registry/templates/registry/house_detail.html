@@ -1,32 +1,50 @@
 {% extends "registry/base.html" %}
 {% block content %}
-<section class="panel mb-5">
+<section class="panel compact-risk-panel mb-5">
     <div class="flex flex-col justify-between gap-5 lg:flex-row lg:items-end">
         <div>
             <a class="btn-secondary mb-4" href="{% url 'registry:house_list' %}"><i class="bi bi-arrow-left"></i> Orqaga</a>
             <p class="text-sm text-[#5C5E62]">Uy ma'lumotlari</p>
             <h2>{{ house.house_number }}-uy</h2>
-            <p class="mt-1 text-[#5C5E62]">{{ house.street_name }} mahallasi</p>
+            <p class="mt-1 text-[#5C5E62]">{{ house.street_name }}</p>
         </div>
-        <div class="grid grid-cols-2 gap-3 sm:grid-cols-5">
-            <div class="mini-stat"><span>Podyezd</span><strong>{{ house.entrance_count }}</strong></div>
-            <div class="mini-stat"><span>Xonadon</span><strong>{{ house.room_count }}</strong></div>
-            <div class="mini-stat good"><span>Band</span><strong>{{ occupied }}</strong></div>
-            <div class="mini-stat danger"><span>Bo'sh</span><strong>{{ empty }}</strong></div>
-            <div class="mini-stat"><span>1 podyezd</span><strong>{{ house.apartments_per_entrance }}</strong></div>
+        <div class="grid grid-cols-2 gap-3 lg:grid-cols-4">
+            <div class="mini-stat danger"><span>Og'ir nazorat</span><strong>{{ serious_attention }}</strong></div>
+            <div class="mini-stat danger"><span>JIEM / qamalgan</span><strong>{{ penal_institution_count }}</strong></div>
+            <div class="mini-stat"><span>Profilaktika</span><strong>{{ preventive_register_count }}</strong></div>
+            <div class="mini-stat good"><span>Ijtimoiy yordam</span><strong>{{ social_assistance_count }}</strong></div>
         </div>
     </div>
+</section>
+
+<section class="panel mb-5">
+    <div class="flex flex-col justify-between gap-4 md:flex-row md:items-center">
+        <div>
+            <h2>Podyezdlar bo'yicha og'ir nazorat</h2>
+            <p class="mt-1 text-sm text-[#5C5E62]">
+                {% if max_entrance and max_entrance.serious_count %}
+                    Eng ko'p e'tibor {{ max_entrance.number }}-podyezdda: {{ max_entrance.serious_count }} nafar.
+                {% else %}
+                    Hozircha og'ir nazorat bo'yicha qayd yo'q.
+                {% endif %}
+            </p>
+        </div>
+    </div>
+    <canvas id="entranceRiskChart" height="96" data-values="{{ entrance_risk_json }}" data-label-prefix="P"></canvas>
 </section>
 
 <section class="entrance-layout">
     {% for entrance in entrance_blocks %}
     <div class="entrance-block">
-        <div class="entrance-title">{{ entrance.number }}-podyezd</div>
+        <div class="entrance-title">
+            <span>{{ entrance.number }}-podyezd</span>
+            <small>Og'ir: {{ entrance.serious_count }} · JIEM: {{ entrance.penal_count }} · Ijtimoiy: {{ entrance.social_count }}</small>
+        </div>
         <div class="apartment-grid">
             {% for room in entrance.rooms %}
-            <button class="apartment-cell {% if room.resident_count %}occupied{% else %}empty{% endif %}" type="button" data-modal-url="{% url 'registry:apartment_info_modal' room.pk %}">
+            <button class="apartment-cell {% if room.serious_count %}occupied danger-room{% elif room.resident_count %}occupied{% else %}empty{% endif %}" type="button" data-modal-url="{% url 'registry:apartment_info_modal' room.pk %}">
                 <strong>{{ room.room_number }}</strong>
-                <span>{% if room.resident_count %}{{ room.resident_count }} a'zo{% else %}bo'sh{% endif %}</span>
+                <span>{% if room.serious_count %}{{ room.serious_count }} og'ir{% elif room.resident_count %}{{ room.resident_count }} a'zo{% else %}bo'sh{% endif %}</span>
             </button>
             {% endfor %}
         </div>
