@@ -1,0 +1,37 @@
+{% extends "registry/base.html" %}
+{% block content %}
+<section class="house-card-grid">
+    {% for house in page_obj %}
+    <article class="house-card house-card-compact house-color-{{ house.color }}">
+        <div class="flex items-start justify-between gap-3">
+            <div>
+                <p class="text-sm text-[#5C5E62]">{{ house.street_name }} mahallasi</p>
+                <h2>{{ house.house_number }}-uy</h2>
+            </div>
+            <span class="house-icon"><i class="bi bi-house-door"></i></span>
+        </div>
+        <div class="house-metrics compact">
+            <span><strong>{{ house.entrance_count }}</strong> podyezd</span>
+            <span><strong>{{ house.room_count }}</strong> xonadon</span>
+            <span class="danger"><strong>{{ house.empty_rooms_count }}</strong> bo'sh</span>
+        </div>
+        <div class="mt-auto flex items-center justify-between gap-3">
+            <p class="text-xs text-[#5C5E62]">{{ house.created_at|date:"d.m.Y" }}</p>
+            <a class="btn-primary" href="{% url 'registry:house_detail' house.pk %}"><i class="bi bi-door-open"></i> Ochish</a>
+        </div>
+    </article>
+    {% empty %}
+    <div class="panel text-center"><p class="empty">Uylar topilmadi.</p></div>
+    {% endfor %}
+</section>
+
+{% if page_obj.paginator.num_pages > 1 %}
+<nav class="mt-6 flex items-center justify-center gap-2">
+    {% if page_obj.has_previous %}<a class="page-btn" href="?q={{ query }}&sort={{ sort }}&page={{ page_obj.previous_page_number }}">Oldingi</a>{% endif %}
+    {% for number in page_obj.paginator.page_range %}
+        <a class="page-btn {% if page_obj.number == number %}active{% endif %}" href="?q={{ query }}&sort={{ sort }}&page={{ number }}">{{ number }}</a>
+    {% endfor %}
+    {% if page_obj.has_next %}<a class="page-btn" href="?q={{ query }}&sort={{ sort }}&page={{ page_obj.next_page_number }}">Keyingi</a>{% endif %}
+</nav>
+{% endif %}
+{% endblock %}

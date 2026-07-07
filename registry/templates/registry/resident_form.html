@@ -1,0 +1,148 @@
+{% extends "registry/base.html" %}
+{% block content %}
+<section class="panel mb-5">
+    <div class="flex flex-col justify-between gap-4 md:flex-row md:items-center">
+        <div>
+            <h2>{% if resident %}A'zoni tahrirlash{% else %}Uy egasi yoki ijarachini qo'shish{% endif %}</h2>
+            <p class="mt-1 text-sm text-[#5C5E62]">{{ room.house.house_number }}-uy · {{ room.room_number }}-xonadon</p>
+        </div>
+        <a class="btn-secondary" href="{% url 'registry:settings_room_residents' room.pk %}"><i class="bi bi-arrow-left"></i> Orqaga</a>
+    </div>
+</section>
+
+<form method="post" enctype="multipart/form-data" class="resident-page-form space-y-5">
+    {% csrf_token %}
+
+    <section class="form-section">
+        <div class="form-section-title">
+            <div>
+                <h3>Asosiy ma'lumotlar</h3>
+                <p>Shaxs uy egasi yoki ijarada yashovchi ekanligini belgilang va asosiy ma'lumotlarni kiriting.</p>
+            </div>
+        </div>
+        <div class="grid gap-4 md:grid-cols-2">
+            <label class="md:col-span-2"><span class="label">{{ form.living_status.label }}</span>{{ form.living_status }}</label>
+            <label class="md:col-span-2">
+                <span class="label">{{ form.photo.label }}</span>
+                <span class="file-picker"><i class="bi bi-image"></i><span data-file-name>Rasm tanlash</span>{{ form.photo }}</span>
+            </label>
+            <label class="md:col-span-2"><span class="label">{{ form.relationship.label }}</span>{{ form.relationship }}</label>
+            <label><span class="label">{{ form.fullname.label }}</span>{{ form.fullname }}</label>
+            <label><span class="label">{{ form.birth_date.label }}</span>{{ form.birth_date }}</label>
+            <label><span class="label">{{ form.gender.label }}</span>{{ form.gender }}</label>
+            <label><span class="label">{{ form.phone.label }}</span>{{ form.phone }}</label>
+            <label><span class="label">{{ form.passport.label }}</span>{{ form.passport }}</label>
+        </div>
+    </section>
+
+    <section class="form-section">
+        <div class="form-section-title"><div><h3>Chet davlatga chiqish holati</h3><p>Uzoq muddatga chetga chiqqan bo'lsa, qaysi davlat, yil, muddat va sababini kiriting.</p></div></div>
+        <label><span class="label">{{ form.long_abroad.label }}</span>{{ form.long_abroad }}</label>
+        <div class="conditional-fields grid gap-4 md:grid-cols-2" data-conditional-for="long_abroad">
+            <label><span class="label">{{ form.abroad_country.label }}</span>{{ form.abroad_country }}</label>
+            <label><span class="label">{{ form.abroad_year.label }}</span>{{ form.abroad_year }}</label>
+            <label><span class="label">{{ form.abroad_duration.label }}</span>{{ form.abroad_duration }}</label>
+            <label class="md:col-span-2"><span class="label">{{ form.abroad_reason.label }}</span>{{ form.abroad_reason }}</label>
+        </div>
+    </section>
+
+    <section class="form-section">
+        <div class="form-section-title"><div><h3>Sudlanganlik va jazoni ijro etish holati</h3><p>Sudlanganlik yoki jazoni ijro etish muassasasi bilan bog'liq ma'lumotlarni belgilang.</p></div></div>
+        <label><span class="label">{{ form.previously_convicted.label }}</span>{{ form.previously_convicted }}</label>
+        <div class="conditional-fields grid gap-4 md:grid-cols-2" data-conditional-for="previously_convicted">
+            <label><span class="label">{{ form.conviction_year.label }}</span>{{ form.conviction_year }}</label>
+            <label class="md:col-span-2"><span class="label">{{ form.conviction_note.label }}</span>{{ form.conviction_note }}</label>
+        </div>
+        <div class="mt-4">
+            <label><span class="label">{{ form.penal_institution.label }}</span>{{ form.penal_institution }}</label>
+            <div class="conditional-fields grid gap-4 md:grid-cols-2" data-conditional-for="penal_institution">
+                <label><span class="label">{{ form.penal_institution_location.label }}</span>{{ form.penal_institution_location }}</label>
+                <label class="md:col-span-2"><span class="label">{{ form.penal_institution_note.label }}</span>{{ form.penal_institution_note }}</label>
+            </div>
+        </div>
+    </section>
+
+    <section class="form-section">
+        <div class="form-section-title"><div><h3>Probatsiya va nazorat</h3><p>Probatsiya, ma'muriy nazorat va profilaktika ro'yxati bo'yicha ma'lumotlar.</p></div></div>
+        <label><span class="label">{{ form.probation.label }}</span>{{ form.probation }}</label>
+        <div class="conditional-fields grid gap-4 md:grid-cols-2" data-conditional-for="probation">
+            <label><span class="label">{{ form.probation_start_year.label }}</span>{{ form.probation_start_year }}</label>
+            <label><span class="label">{{ form.probation_end_year.label }}</span>{{ form.probation_end_year }}</label>
+            <label class="md:col-span-2"><span class="label">{{ form.probation_note.label }}</span>{{ form.probation_note }}</label>
+        </div>
+        <div class="mt-4">
+            <label><span class="label">{{ form.administrative_supervision.label }}</span>{{ form.administrative_supervision }}</label>
+            <div class="conditional-fields grid gap-4 md:grid-cols-2" data-conditional-for="administrative_supervision">
+                <label><span class="label">{{ form.administrative_supervision_start_year.label }}</span>{{ form.administrative_supervision_start_year }}</label>
+                <label><span class="label">{{ form.administrative_supervision_end_year.label }}</span>{{ form.administrative_supervision_end_year }}</label>
+            </div>
+        </div>
+        <div class="mt-4">
+            <label><span class="label">{{ form.preventive_register.label }}</span>{{ form.preventive_register }}</label>
+            <div class="conditional-fields grid gap-4 md:grid-cols-2" data-conditional-for="preventive_register">
+                <label><span class="label">{{ form.preventive_register_date.label }}</span>{{ form.preventive_register_date }}</label>
+                <label><span class="label">{{ form.preventive_register_article.label }}</span>{{ form.preventive_register_article }}</label>
+            </div>
+        </div>
+    </section>
+
+    <section class="form-section">
+        <div class="form-section-title"><div><h3>Ijtimoiy va sog'liq holatlari</h3><p>Oilaviy notinchlik, tibbiy ro'yxatlar va ijtimoiy yordam ehtiyojlari.</p></div></div>
+        <label><span class="label">{{ form.alcohol_addiction.label }}</span>{{ form.alcohol_addiction }}</label>
+        <div class="conditional-fields" data-conditional-for="alcohol_addiction"><label><span class="label">{{ form.alcohol_addiction_note.label }}</span>{{ form.alcohol_addiction_note }}</label></div>
+        <div class="mt-4">
+            <label><span class="label">{{ form.troubled_family.label }}</span>{{ form.troubled_family }}</label>
+            <div class="conditional-fields" data-conditional-for="troubled_family"><label><span class="label">{{ form.troubled_family_note.label }}</span>{{ form.troubled_family_note }}</label></div>
+        </div>
+        <div class="mt-4 grid gap-4 md:grid-cols-2">
+            <label><span class="label">{{ form.mental_health_register.label }}</span>{{ form.mental_health_register }}</label>
+            <label><span class="label">{{ form.disability_register.label }}</span>{{ form.disability_register }}</label>
+        </div>
+        <div class="mt-4">
+            <label><span class="label">{{ form.drug_addiction_register.label }}</span>{{ form.drug_addiction_register }}</label>
+            <div class="conditional-fields" data-conditional-for="drug_addiction_register"><label><span class="label">{{ form.drug_addiction_since.label }}</span>{{ form.drug_addiction_since }}</label></div>
+        </div>
+        <div class="mt-4">
+            <label><span class="label">{{ form.needs_social_assistance.label }}</span>{{ form.needs_social_assistance }}</label>
+            <div class="conditional-fields" data-conditional-for="needs_social_assistance"><label><span class="label">{{ form.social_assistance_note.label }}</span>{{ form.social_assistance_note }}</label></div>
+        </div>
+    </section>
+
+    <section class="form-section">
+        <div class="form-section-title"><div><h3>Qurol va xavfsizlik vositalari</h3><p>Ov quroli va xonadon/podyezd xavfsizlik vositalari bo'yicha ma'lumotlar.</p></div></div>
+        <label><span class="label">{{ form.hunting_weapon.label }}</span>{{ form.hunting_weapon }}</label>
+        <div class="conditional-fields grid gap-4 md:grid-cols-2" data-conditional-for="hunting_weapon">
+            <label><span class="label">{{ form.weapon_count.label }}</span>{{ form.weapon_count }}</label>
+            <label><span class="label">{{ form.weapon_model.label }}</span>{{ form.weapon_model }}</label>
+        </div>
+        <div class="mt-4 grid gap-4 md:grid-cols-2">
+            <label><span class="label">{{ form.security_panel_connected.label }}</span>{{ form.security_panel_connected }}</label>
+            <label><span class="label">{{ form.entrance_camera.label }}</span>{{ form.entrance_camera }}</label>
+            <label><span class="label">{{ form.yard_camera.label }}</span>{{ form.yard_camera }}</label>
+            <label><span class="label">{{ form.entrance_sos_button.label }}</span>{{ form.entrance_sos_button }}</label>
+        </div>
+    </section>
+
+    <section class="form-section">
+        <div class="form-section-title"><div><h3>Murojaatlar va ijtimoiy xulosa</h3><p>Murojaat tushgan bo'lsa sonini kiriting, har biri uchun izoh maydoni ochiladi.</p></div></div>
+        <label><span class="label">{{ form.has_complaints.label }}</span>{{ form.has_complaints }}</label>
+        <div class="conditional-fields" data-conditional-for="has_complaints">
+            <label><span class="label">{{ form.complaint_count.label }}</span>{{ form.complaint_count }}</label>
+            <div id="complaint-notes" class="mt-4 space-y-3" data-existing='{{ complaint_notes_json|escape }}'></div>
+        </div>
+        <div class="mt-4">
+            <label><span class="label">{{ form.social_conclusion.label }}</span>{{ form.social_conclusion }}</label>
+            <div class="conditional-fields" data-conditional-for="social_conclusion"><label><span class="label">{{ form.social_conclusion_note.label }}</span>{{ form.social_conclusion_note }}</label></div>
+        </div>
+    </section>
+
+    <section class="form-section">
+        <label><span class="label">{{ form.notes.label }}</span>{{ form.notes }}</label>
+    </section>
+
+    <div class="sticky bottom-0 z-20 -mx-4 flex justify-end gap-3 border-t border-slate-200 bg-white/90 px-4 py-4 backdrop-blur sm:-mx-8 sm:px-8">
+        <a class="btn-secondary" href="{% url 'registry:settings_room_residents' room.pk %}">Bekor qilish</a>
+        <button class="btn-primary"><i class="bi bi-check2"></i> Saqlash</button>
+    </div>
+</form>
+{% endblock %}

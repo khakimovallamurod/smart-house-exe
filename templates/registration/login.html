@@ -1,0 +1,45 @@
+{% load static %}
+<!doctype html>
+<html lang="uz">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Tizimga kirish</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="{% static 'registry/css/app.css' %}">
+</head>
+<body class="min-h-screen bg-[#f4f4f4] text-[#171A20]">
+    <main class="grid min-h-screen place-items-center px-4 py-8">
+        <section class="login-card">
+            <div class="mb-6 text-center">
+                <div class="mx-auto mb-4 grid h-14 w-14 place-items-center rounded bg-[#171A20] text-2xl text-white">
+                    <i class="bi bi-houses"></i>
+                </div>
+                <h1 class="text-2xl font-medium">Internal Registry</h1>
+                <p class="mt-2 text-sm text-[#5C5E62]">Ichki ishlar uchun maxfiy lokal reyestr</p>
+            </div>
+
+            {% if form.errors %}
+                <div class="mb-4 rounded border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700">
+                    Login yoki parol noto'g'ri kiritildi.
+                </div>
+            {% endif %}
+
+            <form method="post" class="space-y-4">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ next }}">
+                <label>
+                    <span class="label">Login</span>
+                    <input class="form-input" name="username" autocomplete="username" placeholder="system-admin" required>
+                </label>
+                <label>
+                    <span class="label">Parol</span>
+                    <input class="form-input" name="password" type="password" autocomplete="current-password" placeholder="system-2026" required>
+                </label>
+                <button class="btn-primary w-full justify-center" type="submit"><i class="bi bi-box-arrow-in-right"></i> Kirish</button>
+            </form>
+        </section>
+    </main>
+</body>
+</html>

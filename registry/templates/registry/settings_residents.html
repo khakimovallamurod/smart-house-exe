@@ -1,0 +1,68 @@
+{% extends "registry/base.html" %}
+{% block content %}
+<section class="panel mb-5">
+    <div class="flex flex-col justify-between gap-4 md:flex-row md:items-center">
+        <div>
+            <h2>{{ room.house.house_number }}-uy · {{ room.room_number }}-xonadon</h2>
+            <p class="mt-1 text-sm text-[#5C5E62]">Bu sahifada xonadon a'zolari jadval ko'rinishida boshqariladi.</p>
+        </div>
+        <div class="flex flex-wrap gap-2">
+            <a class="btn-secondary" href="{% url 'registry:settings_house_rooms' room.house.pk %}"><i class="bi bi-arrow-left"></i> Orqaga</a>
+            <a class="btn-primary" href="{% url 'registry:resident_create' room.pk %}"><i class="bi bi-plus-lg"></i> A'zo qo'shish</a>
+        </div>
+    </div>
+</section>
+
+<section class="panel">
+    <div class="overflow-x-auto rounded border border-slate-200 bg-white">
+        <table class="member-table">
+            <thead>
+                <tr>
+                    <th>T/r</th>
+                    <th>Yashash holati</th>
+                    <th>Qarindoshlik</th>
+                    <th>F.I.Sh</th>
+                    <th>Tug'ilgan sana</th>
+                    <th>Jinsi</th>
+                    <th>Telefon raqami</th>
+                    <th>Pasport seriyasi</th>
+                    <th>Nazorat</th>
+                    <th class="text-center">Amallar</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for resident in residents %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ resident.get_living_status_display }}</td>
+                    <td>{{ resident.get_relationship_display }}</td>
+                    <td><strong>{{ resident.fullname }}</strong></td>
+                    <td>{{ resident.birth_date|date:"d.m.Y"|default:"-" }}</td>
+                    <td>{{ resident.get_gender_display|default:"-" }}</td>
+                    <td>{{ resident.phone|default:"-" }}</td>
+                    <td>{{ resident.passport|default:"-" }}</td>
+                    <td>
+                        {% if resident.supervision_count %}
+                            <span class="table-badge danger">{{ resident.supervision_count }} ta belgi</span>
+                        {% else %}
+                            <span class="table-badge good">Toza</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="table-actions">
+                            <a class="icon-action edit" title="Tahrirlash" aria-label="Tahrirlash" href="{% url 'registry:resident_edit' resident.pk %}"><i class="bi bi-pencil-square"></i></a>
+                            <form method="post" action="{% url 'registry:resident_delete' resident.pk %}?next=settings" data-swal-delete="Bu a'zoni o'chirishni tasdiqlaysizmi?">
+                                {% csrf_token %}
+                                <button class="icon-action delete" title="O'chirish" aria-label="O'chirish"><i class="bi bi-trash3"></i></button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="10" class="text-center text-[#5C5E62]">Bu xonadonda hali a'zo yo'q.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

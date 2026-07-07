@@ -1,0 +1,37 @@
+{% extends "registry/base.html" %}
+{% block content %}
+<section class="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+    <div class="stat-card"><i class="bi bi-house-door"></i><span>Jami uylar</span><strong>{{ stats.total_houses }}</strong></div>
+    <div class="stat-card"><i class="bi bi-grid-3x3-gap"></i><span>Jami xonadonlar</span><strong>{{ stats.total_rooms }}</strong></div>
+    <div class="stat-card good"><i class="bi bi-check2-circle"></i><span>Band xonadonlar</span><strong>{{ stats.occupied_rooms }}</strong></div>
+    <div class="stat-card danger"><i class="bi bi-exclamation-circle"></i><span>Bo'sh xonadonlar</span><strong>{{ stats.empty_rooms }}</strong></div>
+    <div class="stat-card"><i class="bi bi-people"></i><span>Jami a'zolar</span><strong>{{ stats.total_residents }}</strong></div>
+</section>
+
+<section class="mt-6 grid gap-5 xl:grid-cols-3">
+    <div class="panel"><h2>Band va bo'sh xonadonlar</h2><canvas id="pieChart" height="190"></canvas></div>
+    <div class="panel"><h2>Uylar bo'yicha xonadonlar</h2><canvas id="lineChart" height="190"></canvas></div>
+    <div class="panel"><h2>Asosiy ko'rsatkichlar</h2><canvas id="barChart" height="190"></canvas></div>
+</section>
+
+<section class="mt-6 grid gap-5 xl:grid-cols-4">
+    <div class="panel xl:col-span-1">
+        <h2>Holat xulosasi</h2>
+        <div class="mt-4 space-y-3">
+            {% for label, value, color in status_summary %}
+            <div class="flex items-center justify-between rounded bg-white/70 p-3">
+                <span class="text-sm text-[#5C5E62]">{{ label }}</span>
+                <strong>{{ value }}</strong>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="panel"><h2>Yangi uylar</h2>{% include "registry/partials/simple_house_list.html" with houses=recent_houses %}</div>
+    <div class="panel"><h2>So'nggi yangilangan xonalar</h2>
+        <div class="mt-4 space-y-3">{% for room in latest_rooms %}<a class="list-row" href="{% url 'registry:house_detail' room.house.pk %}">{{ room.room_number }}-xona <span>{{ room.house.street_name }}</span></a>{% empty %}<p class="empty">Hali xona yo'q.</p>{% endfor %}</div>
+    </div>
+    <div class="panel"><h2>Yangi qo'shilgan aholi</h2>
+        <div class="mt-4 space-y-3">{% for resident in recent_residents %}<a class="list-row" href="{% url 'registry:house_detail' resident.room.house.pk %}">{{ resident.fullname }} <span>{{ resident.room.room_number }}-xona</span></a>{% empty %}<p class="empty">Hali aholi qo'shilmagan.</p>{% endfor %}</div>
+    </div>
+</section>
+{% endblock %}

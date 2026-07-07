@@ -1,0 +1,116 @@
+<div class="modal-backdrop" data-modal-backdrop>
+    <div class="modal-panel apartment-info-panel">
+        <div class="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200 bg-white/90 p-5 backdrop-blur">
+            <div>
+                <p class="text-sm text-[#5C5E62]">{{ room.house.house_number }}-uy · {{ room.entrance_number }}-podyezd</p>
+                <h2 class="text-xl font-medium">{{ room.room_number }}-xonadon ma'lumotlari</h2>
+            </div>
+            <button class="icon-btn" data-modal-close><i class="bi bi-x-lg"></i></button>
+        </div>
+
+        {% if residents %}
+        <div class="grid gap-5 p-5 lg:grid-cols-[280px_1fr]">
+            <aside class="resident-switcher">
+                {% for resident in residents %}
+                <button class="resident-switch {% if forloop.first %}active{% endif %}" type="button" data-resident-target="resident-{{ resident.pk }}">
+                    <span class="resident-avatar">{% if resident.photo %}<img src="{{ resident.photo.url }}" alt="{{ resident.fullname }}">{% else %}<i class="bi bi-person"></i>{% endif %}</span>
+                    <span>
+                        <strong>{{ resident.fullname }}</strong>
+                        <small>{{ resident.get_living_status_display }}</small>
+                    </span>
+                </button>
+                {% endfor %}
+            </aside>
+
+            <section>
+                {% for resident in residents %}
+                <article class="resident-detail {% if not forloop.first %}hidden{% endif %}" id="resident-{{ resident.pk }}">
+                    <div class="resident-hero">
+                        <div class="resident-photo">
+                            {% if resident.photo %}<img src="{{ resident.photo.url }}" alt="{{ resident.fullname }}">{% else %}<i class="bi bi-person"></i>{% endif %}
+                        </div>
+                        <div>
+                            <span class="table-badge good">{{ resident.get_living_status_display }}</span>
+                            <h3>{{ resident.fullname }}</h3>
+                            <p>{{ resident.phone|default:"Telefon kiritilmagan" }}</p>
+                        </div>
+                    </div>
+
+                    <div class="info-grid">
+                        <div><span>Tug'ilgan sana</span><strong>{{ resident.birth_date|date:"d.m.Y"|default:"-" }}</strong></div>
+                        <div><span>Jinsi</span><strong>{{ resident.get_gender_display|default:"-" }}</strong></div>
+                        <div><span>Pasport seriyasi</span><strong>{{ resident.passport|default:"-" }}</strong></div>
+                    </div>
+
+                    <div class="positive-sections">
+                        {% if resident.long_abroad %}
+                        <div class="positive-card"><h4>Chet davlatga chiqqan</h4><p>{{ resident.abroad_country }} · {{ resident.abroad_year }} · {{ resident.abroad_duration }}</p><small>{{ resident.abroad_reason }}</small></div>
+                        {% endif %}
+                        {% if resident.previously_convicted %}
+                        <div class="positive-card"><h4>Muqaddam sudlangan</h4><p>{{ resident.conviction_year }}</p><small>{{ resident.conviction_note }}</small></div>
+                        {% endif %}
+                        {% if resident.penal_institution %}
+                        <div class="positive-card"><h4>Jazoni ijro etish muassasasi</h4><p>{{ resident.penal_institution_location }}</p><small>{{ resident.penal_institution_note }}</small></div>
+                        {% endif %}
+                        {% if resident.probation %}
+                        <div class="positive-card"><h4>Probatsiya hisobida</h4><p>{{ resident.probation_start_year }} - {{ resident.probation_end_year }}</p><small>{{ resident.probation_note }}</small></div>
+                        {% endif %}
+                        {% if resident.administrative_supervision %}
+                        <div class="positive-card"><h4>Ma'muriy nazorat</h4><p>{{ resident.administrative_supervision_start_year }} - {{ resident.administrative_supervision_end_year }}</p></div>
+                        {% endif %}
+                        {% if resident.preventive_register %}
+                        <div class="positive-card"><h4>Profilaktika ro'yxatida</h4><p>{{ resident.preventive_register_date|date:"d.m.Y" }} · {{ resident.preventive_register_article }}</p></div>
+                        {% endif %}
+                        {% if resident.alcohol_addiction %}
+                        <div class="positive-card"><h4>Spirtli ichimliklarga ruju qo'ygan</h4><small>{{ resident.alcohol_addiction_note }}</small></div>
+                        {% endif %}
+                        {% if resident.troubled_family %}
+                        <div class="positive-card"><h4>Notinch oila</h4><small>{{ resident.troubled_family_note }}</small></div>
+                        {% endif %}
+                        {% if resident.mental_health_register %}
+                        <div class="positive-card"><h4>Ruhiy kasallar ro'yxatida</h4></div>
+                        {% endif %}
+                        {% if resident.disability_register %}
+                        <div class="positive-card"><h4>Nogironlik ro'yxatida</h4></div>
+                        {% endif %}
+                        {% if resident.hunting_weapon %}
+                        <div class="positive-card"><h4>Ov quroli bor</h4><p>{{ resident.weapon_count }} ta · {{ resident.weapon_model }}</p></div>
+                        {% endif %}
+                        {% if resident.drug_addiction_register %}
+                        <div class="positive-card"><h4>Giyohvandlik ro'yxatida</h4><p>{{ resident.drug_addiction_since }}</p></div>
+                        {% endif %}
+                        {% if resident.needs_social_assistance %}
+                        <div class="positive-card"><h4>Ijtimoiy yordamga muhtoj</h4><small>{{ resident.social_assistance_note }}</small></div>
+                        {% endif %}
+                        {% if resident.security_panel_connected %}
+                        <div class="positive-card"><h4>Xonadon qo'riqlov pultiga ulangan</h4></div>
+                        {% endif %}
+                        {% if resident.entrance_camera %}
+                        <div class="positive-card"><h4>Podyezd eshigi oldida kamera bor</h4></div>
+                        {% endif %}
+                        {% if resident.yard_camera %}
+                        <div class="positive-card"><h4>Uy atrofi kameralashtirilgan</h4></div>
+                        {% endif %}
+                        {% if resident.entrance_sos_button %}
+                        <div class="positive-card"><h4>Podyezdga SOS tugma qo'yilgan</h4></div>
+                        {% endif %}
+                        {% if resident.has_complaints %}
+                        <div class="positive-card"><h4>Xonadondan murojaat tushgan</h4><p>{{ resident.complaint_count }} ta</p>{% for note in resident.complaint_notes %}<small>{{ forloop.counter }}. {{ note }}</small>{% endfor %}</div>
+                        {% endif %}
+                        {% if resident.social_conclusion %}
+                        <div class="positive-card"><h4>Ijtimoiy xulosa berilgan</h4><small>{{ resident.social_conclusion_note }}</small></div>
+                        {% endif %}
+                    </div>
+                </article>
+                {% endfor %}
+            </section>
+        </div>
+        {% else %}
+        <div class="p-6 text-center">
+            <div class="mx-auto mb-3 grid h-12 w-12 place-items-center rounded bg-rose-50 text-rose-600"><i class="bi bi-house-x"></i></div>
+            <h3 class="text-lg font-medium">Bu xonadonda ma'lumot yo'q</h3>
+            <p class="mt-1 text-sm text-[#5C5E62]">A'zo ma'lumotlari sozlash bo'limidan kiritiladi.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>

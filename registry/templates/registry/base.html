@@ -1,0 +1,73 @@
+{% load static %}
+<!doctype html>
+<html lang="uz">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ page_title|default:"Internal Registry" }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="{% static 'registry/css/app.css' %}">
+</head>
+<body class="bg-[#f4f4f4] text-[#171A20]">
+<div class="min-h-screen lg:flex">
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-72 -translate-x-full border-r border-white/60 bg-white/80 backdrop-blur-2xl transition lg:translate-x-0">
+        <div class="flex h-20 items-center justify-between px-6">
+            <a href="{% url 'registry:dashboard' %}" class="flex items-center gap-3">
+                    <span class="grid h-10 w-10 place-items-center rounded bg-[#171A20] text-white"><i class="bi bi-shield-lock"></i></span>
+                    <span>
+                    <span class="block text-sm font-medium">Internal Registry</span>
+                    <span class="block text-xs text-[#5C5E62]">Xizmat ma'lumotlari</span>
+                </span>
+            </a>
+            <button class="lg:hidden" data-sidebar-close><i class="bi bi-x-lg"></i></button>
+        </div>
+        <nav class="space-y-2 px-4">
+            <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'registry:dashboard' %}">
+                <i class="bi bi-speedometer2"></i><span>Boshqaruv paneli</span>
+            </a>
+            <a class="nav-link {% if request.resolver_match.url_name == 'house_list' or request.resolver_match.url_name == 'house_detail' %}active{% endif %}" href="{% url 'registry:house_list' %}">
+                <i class="bi bi-building"></i><span>Asosiy sahifa</span>
+            </a>
+            <a class="nav-link {% if request.resolver_match.url_name == 'settings' %}active{% endif %}" href="{% url 'registry:settings' %}">
+                <i class="bi bi-sliders"></i><span>Sozlash</span>
+            </a>
+        </nav>
+    </aside>
+
+    <div class="lg:pl-72 w-full">
+        <header class="sticky top-0 z-30 border-b border-white/60 bg-white/70 px-4 py-4 backdrop-blur-xl sm:px-8">
+            <div class="flex items-center justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <button class="grid h-10 w-10 place-items-center rounded bg-white lg:hidden" data-sidebar-open><i class="bi bi-list"></i></button>
+                    <div>
+                        <h1 class="text-xl font-medium">{{ page_title|default:"Boshqaruv paneli" }}</h1>
+                        <p class="text-sm text-[#5C5E62]">Ichki ishlar uchun maxfiy lokal reyestr</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <a href="{% url 'registry:settings' %}" class="btn-primary"><i class="bi bi-plus-lg"></i> Uy yaratish</a>
+                    <form method="post" action="{% url 'logout' %}">
+                        {% csrf_token %}
+                        <button class="icon-btn" title="Chiqish" aria-label="Chiqish"><i class="bi bi-box-arrow-right"></i></button>
+                    </form>
+                </div>
+            </div>
+        </header>
+
+        <main class="px-4 py-6 sm:px-8">
+            {% if messages %}
+                <div id="toasts" class="fixed right-5 top-24 z-50 space-y-3">
+                    {% for message in messages %}
+                        <div class="toast {{ message.tags }}"><i class="bi bi-check-circle"></i>{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+</div>
+<div id="modal-root"></div>
+<script src="{% static 'registry/js/app.js' %}"></script>
+</body>
+</html>

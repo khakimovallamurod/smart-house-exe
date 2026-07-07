@@ -1,0 +1,47 @@
+<div class="resident-fieldset grid gap-4 rounded border border-slate-200 bg-slate-50/60 p-4 md:grid-cols-2">
+    <label>
+        <span class="label">To'liq ism</span>
+        <input class="form-input" name="fullname" value="{{ resident.fullname|default:'' }}" placeholder="Masalan: Ali Valiyev" required>
+    </label>
+    <label>
+        <span class="label">Qarindoshlik</span>
+        <select class="form-input" name="relationship">
+            {% for value, label in relationship_choices %}
+                <option value="{{ value }}" {% if resident.relationship == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+        </select>
+    </label>
+    <label>
+        <span class="label">Telefon raqami</span>
+        <input class="form-input" name="phone" value="{{ resident.phone|default:'' }}" placeholder="+998 90 123 45 67">
+    </label>
+    <label>
+        <span class="label">Tug'ilgan sana</span>
+        <input class="form-input" type="date" name="birth_date" value="{{ resident.birth_date|date:'Y-m-d' }}">
+    </label>
+    <label>
+        <span class="label">Jinsi</span>
+        <select class="form-input" name="gender">
+            <option value="">Tanlang</option>
+            {% for value, label in gender_choices %}
+                <option value="{{ value }}" {% if resident.gender == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+        </select>
+    </label>
+    <label>
+        <span class="label">Kasbi</span>
+        <input class="form-input" name="occupation" value="{{ resident.occupation|default:'' }}" placeholder="Masalan: o'qituvchi">
+    </label>
+    <label class="flex items-center gap-2 md:col-span-2">
+        <input type="checkbox" name="has_violation" value="{% if resident %}1{% else %}0{% endif %}" {% if resident.has_violation %}checked{% endif %}>
+        <span class="text-sm text-[#393C41]">Huquqbuzarlik bormi?</span>
+    </label>
+    <label class="md:col-span-2">
+        <span class="label">Huquqbuzarlik izohi</span>
+        <textarea class="form-input" name="violation_description" rows="2" placeholder="Huquqbuzarlik bo'lsa qisqacha yozing">{{ resident.violation_description|default:'' }}</textarea>
+    </label>
+    <label class="md:col-span-2">
+        <span class="label">Qo'shimcha izoh</span>
+        <textarea class="form-input" name="notes" rows="2" placeholder="Qo'shimcha izoh">{{ resident.notes|default:'' }}</textarea>
+    </label>
+</div>

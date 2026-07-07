@@ -1,0 +1,78 @@
+{% extends "registry/base.html" %}
+{% block content %}
+<section class="panel mb-5">
+    <div class="flex flex-col justify-between gap-4 md:flex-row md:items-center">
+        <div>
+            <h2>Uylarni boshqarish</h2>
+            <p class="mt-1 text-sm text-[#5C5E62]">Uylar jadval ko'rinishida. Uy tanlanganda podyezd va xonadonlari ochiladi.</p>
+        </div>
+        <button class="btn-primary" type="button" data-open-local-modal="house-create"><i class="bi bi-plus-lg"></i> Uy qo'shish</button>
+    </div>
+</section>
+
+<section class="panel">
+    <div class="overflow-x-auto rounded border border-slate-200 bg-white">
+        <table class="member-table">
+            <thead>
+                <tr>
+                    <th>Uy</th>
+                    <th>Mahalla</th>
+                    <th>Podyezd</th>
+                    <th>Xonadon</th>
+                    <th>Band</th>
+                    <th>A'zolar</th>
+                    <th>Rang</th>
+                    <th class="text-center">Amallar</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for house in houses %}
+                <tr>
+                    <td><strong>{{ house.house_number }}-uy</strong></td>
+                    <td>{{ house.street_name }}</td>
+                    <td>{{ house.entrance_count }}</td>
+                    <td>{{ house.room_count }}</td>
+                    <td>{{ house.occupied_rooms }}</td>
+                    <td>{{ house.residents_total }}</td>
+                    <td><span class="color-dot house-color-bg-{{ house.color }}"></span> {{ house.get_color_display }}</td>
+                    <td>
+                        <div class="table-actions">
+                            <a class="icon-action edit" title="Xonalar" aria-label="Xonalar" href="{% url 'registry:settings_house_rooms' house.pk %}"><i class="bi bi-grid-3x3-gap"></i></a>
+                            <a class="icon-action edit" title="Tahrirlash" aria-label="Tahrirlash" href="{% url 'registry:house_edit' house.pk %}"><i class="bi bi-pencil-square"></i></a>
+                            <form method="post" action="{% url 'registry:house_delete' house.pk %}" data-swal-delete="Bu uyni o'chirishni tasdiqlaysizmi?">
+                                {% csrf_token %}
+                                <button class="icon-action delete" title="O'chirish" aria-label="O'chirish"><i class="bi bi-trash3"></i></button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="8" class="text-center text-[#5C5E62]">Hali uy yaratilmagan.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<div class="local-modal hidden" id="house-create">
+    <div class="local-modal-panel">
+        <div class="flex items-center justify-between border-b border-slate-200 p-5">
+            <h3 class="text-lg font-medium">Yangi uy qo'shish</h3>
+            <button class="icon-btn" type="button" data-close-local-modal><i class="bi bi-x-lg"></i></button>
+        </div>
+        <form method="post" class="grid gap-4 p-5 md:grid-cols-2">
+            {% csrf_token %}
+            {% for field in form %}
+                <label class="{% if field.name == 'color' %}md:col-span-2{% endif %}">
+                    <span class="label">{{ field.label }}</span>
+                    {{ field }}
+                    {% for error in field.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+                </label>
+            {% endfor %}
+            <div class="md:col-span-2 flex justify-end">
+                <button class="btn-primary"><i class="bi bi-check2"></i> Saqlash</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

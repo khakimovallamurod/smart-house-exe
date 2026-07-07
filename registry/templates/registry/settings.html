@@ -1,0 +1,25 @@
+{% extends "registry/base.html" %}
+{% block content %}
+<section class="mx-auto max-w-3xl">
+    <div class="panel">
+        <div class="mb-6 flex items-center justify-between">
+            <div>
+                <h2>{% if house %}Uyni tahrirlash{% else %}Yangi uy yaratish{% endif %}</h2>
+                <p class="mt-1 text-sm text-[#5C5E62]">Xonalar avtomatik yaratiladi va shu uyga ulanadi.</p>
+            </div>
+            <i class="bi bi-building-add text-3xl text-[#3E6AE1]"></i>
+        </div>
+        <form method="post" class="space-y-5">
+            {% csrf_token %}
+            {% for field in form %}
+                <label class="block">
+                    <span class="label">{{ field.label }}</span>
+                    {{ field }}
+                    {% for error in field.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+                </label>
+            {% endfor %}
+            <button class="btn-primary w-full justify-center" type="submit"><i class="bi bi-check2"></i>{% if house %}O'zgarishlarni saqlash{% else %}Uy yaratish{% endif %}</button>
+        </form>
+    </div>
+</section>
+{% endblock %}

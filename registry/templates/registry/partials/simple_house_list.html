@@ -1,0 +1,10 @@
+<div class="mt-4 space-y-3">
+    {% for house in houses %}
+        <a class="list-row" href="{% url 'registry:house_detail' house.pk %}">
+            {{ house.house_number }}-uy
+            <span>{{ house.street_name }}</span>
+        </a>
+    {% empty %}
+        <p class="empty">Hali uy yaratilmagan.</p>
+    {% endfor %}
+</div>
