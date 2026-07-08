@@ -16,7 +16,7 @@
     </div>
 </section>
 
-{% include "registry/partials/risk_cards.html" with risk_cards=risk_cards extra_class="mb-5" %}
+{% include "registry/partials/risk_cards.html" with risk_cards=risk_cards risk_people_groups=risk_people_groups extra_class="mb-3" %}
 
 <section class="panel resident-finder mb-5">
     <div class="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
@@ -59,7 +59,7 @@
         </div>
         <div class="apartment-grid">
             {% for room in entrance.rooms %}
-            <button class="apartment-cell {% if room.risk_factor_count >= 5 %}risk-red{% elif room.risk_factor_count > 0 %}risk-yellow{% elif room.resident_count %}risk-green{% else %}empty{% endif %}" type="button" data-modal-url="{% url 'registry:apartment_info_modal' room.pk %}">
+            <button class="apartment-cell {% if room.risk_factor_count >= 4 %}risk-red{% elif room.risk_factor_count > 0 %}risk-yellow{% elif room.resident_count %}risk-green{% else %}empty{% endif %}" type="button" data-modal-url="{% url 'registry:apartment_info_modal' room.pk %}">
                 <strong>{{ room.room_number }}</strong>
                 <span>
                     {% if room.resident_count %}

@@ -62,13 +62,20 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-s
 .house-security-list span { display:flex; align-items:center; gap:.45rem; border-radius:6px; background:#fff1f2; color:#be123c; padding:.65rem .75rem; font-size:12px; font-weight:500; }
 .house-security-list span.ok { background:#ecfdf5; color:#047857; }
 .risk-card-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:.75rem; }
-.risk-card { min-height:92px; border-radius:10px; border:1px solid #e5e7eb; background:#fff; padding:.85rem; box-shadow:0 10px 28px rgba(15,23,42,.04); }
+.risk-card { min-height:92px; border-radius:10px; border:1px solid #e5e7eb; background:#fff; padding:.85rem; box-shadow:0 10px 28px rgba(15,23,42,.04); text-align:left; transition:.25s; }
+.risk-card:hover, .risk-card.active { border-color:#3E6AE1; transform:translateY(-1px); box-shadow:0 14px 32px rgba(15,23,42,.08); }
 .risk-card span { display:block; min-height:34px; color:#393C41; font-size:13px; line-height:1.25; }
 .risk-card strong { display:block; margin-top:.5rem; font-size:28px; font-weight:600; line-height:1; }
 .risk-card.red { border-left:5px solid #e11d48; }
 .risk-card.red strong { color:#be123c; }
 .risk-card.yellow { border-left:5px solid #f59e0b; }
 .risk-card.yellow strong { color:#b45309; }
+.risk-people-panels { display:block; }
+.risk-people-panel { border:1px solid #e5e7eb; border-radius:12px; background:rgba(255,255,255,.86); padding:1rem; box-shadow:0 16px 34px rgba(15,23,42,.05); }
+.risk-people-head { display:flex; align-items:flex-start; justify-content:space-between; gap:1rem; border-bottom:1px solid #e5e7eb; padding-bottom:.8rem; }
+.risk-people-head h3 { font-size:17px; font-weight:600; }
+.risk-people-head p { margin-top:.2rem; color:#5C5E62; font-size:13px; }
+.risk-people-grid { margin-top:1rem; display:grid; grid-template-columns:repeat(auto-fill,minmax(290px,1fr)); gap:.75rem; }
 .resident-finder { overflow:hidden; }
 .resident-search-field { display:flex; width:min(460px,100%); min-height:46px; align-items:center; gap:.65rem; border:1px solid #dbe1ea; border-radius:8px; background:#fff; padding:0 .85rem; color:#5C5E62; transition:.25s; }
 .resident-search-field:focus-within { border-color:#3E6AE1; box-shadow:0 0 0 3px rgba(62,106,225,.12); }

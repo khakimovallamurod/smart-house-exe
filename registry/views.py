@@ -115,6 +115,38 @@ def resident_risk_labels(resident):
     return [label for field, label, _color, _count_type in RISK_METRICS if getattr(resident, field)]
 
 
+def resident_card_payload(resident):
+    risks = resident_risk_labels(resident)
+    return {
+        "id": resident.pk,
+        "name": resident.fullname,
+        "phone": resident.phone,
+        "living_status": resident.get_living_status_display(),
+        "relationship": resident.get_relationship_display(),
+        "room_number": resident.room.room_number,
+        "entrance_number": resident.room.entrance_number,
+        "risk_count": len(risks),
+        "risks": risks,
+        "modal_url": reverse("registry:apartment_info_modal", args=[resident.room.pk]),
+    }
+
+
+def risk_people_groups(residents):
+    groups = {}
+    for field, label, color, _count_type in RISK_METRICS:
+        people = residents.filter(**{field: True}).select_related("room").order_by(
+            "room__entrance_number",
+            "room__room_number",
+            "fullname",
+        )
+        groups[field] = {
+            "label": label,
+            "color": color,
+            "people": [resident_card_payload(resident) for resident in people],
+        }
+    return groups
+
+
 def dashboard(request):
     houses = House.objects.all()
     rooms = Room.objects.select_related("house")
@@ -330,8 +362,8 @@ def house_detail(request, pk):
         entrance_rooms = list(rooms.filter(entrance_number=entrance_number))
         for room in entrance_rooms:
             room.risk_factor_count = room_risk_factor_count(room)
-        red_rooms = sum(1 for room in entrance_rooms if room.risk_factor_count >= 5)
-        yellow_rooms = sum(1 for room in entrance_rooms if 0 < room.risk_factor_count < 5)
+        red_rooms = sum(1 for room in entrance_rooms if room.risk_factor_count >= 4)
+        yellow_rooms = sum(1 for room in entrance_rooms if 0 < room.risk_factor_count < 4)
         green_rooms = sum(1 for room in entrance_rooms if room.resident_count and room.risk_factor_count == 0)
         serious_count = house_residents.filter(room__entrance_number=entrance_number).filter(ATTENTION_Q).distinct().count()
         high_count = house_residents.filter(room__entrance_number=entrance_number).filter(HIGH_RISK_Q).distinct().count()
@@ -354,19 +386,7 @@ def house_detail(request, pk):
     max_entrance = max(entrance_blocks, key=lambda item: item["serious_count"], default=None)
     resident_search_items = []
     for resident in house_residents.select_related("room").order_by("fullname"):
-        risks = resident_risk_labels(resident)
-        resident_search_items.append({
-            "id": resident.pk,
-            "name": resident.fullname,
-            "phone": resident.phone,
-            "living_status": resident.get_living_status_display(),
-            "relationship": resident.get_relationship_display(),
-            "room_number": resident.room.room_number,
-            "entrance_number": resident.room.entrance_number,
-            "risk_count": len(risks),
-            "risks": risks,
-            "modal_url": reverse("registry:apartment_info_modal", args=[resident.room.pk]),
-        })
+        resident_search_items.append(resident_card_payload(resident))
 
     context = {
         "page_title": f"{house.house_number}-uy",
@@ -379,6 +399,7 @@ def house_detail(request, pk):
         "high_risk_attention": house_residents.filter(HIGH_RISK_Q).distinct().count(),
         "medium_risk_attention": house_residents.filter(MEDIUM_RISK_Q).distinct().count(),
         "risk_cards": risk_metric_cards(house_residents),
+        "risk_people_groups": risk_people_groups(house_residents),
         "resident_search_items": resident_search_items,
         "social_assistance_count": house_residents.filter(needs_social_assistance=True).count(),
         "max_entrance": max_entrance,

@@ -1,8 +1,43 @@
 <section class="risk-card-grid {{ extra_class|default:'' }}">
     {% for card in risk_cards %}
-    <div class="risk-card {{ card.color }}">
+    <button class="risk-card {{ card.color }}" type="button" {% if risk_people_groups %}data-risk-card="{{ card.key }}"{% endif %}>
         <span>{{ card.label }}</span>
         <strong>{{ card.count }}</strong>
+    </button>
+    {% endfor %}
+</section>
+{% if risk_people_groups %}
+<section class="risk-people-panels mb-5">
+    {% for key, group in risk_people_groups.items %}
+    <div class="risk-people-panel hidden" data-risk-panel="{{ key }}">
+        <div class="risk-people-head">
+            <div>
+                <h3>{{ group.label }}</h3>
+                <p>{{ group.people|length }} nafar shaxs topildi.</p>
+            </div>
+            <button class="icon-btn" type="button" data-risk-panel-close aria-label="Yopish"><i class="bi bi-x-lg"></i></button>
+        </div>
+        <div class="risk-people-grid">
+            {% for person in group.people %}
+            <article class="resident-result-card {% if person.risk_count >= 4 %}red{% elif person.risk_count > 0 %}yellow{% else %}green{% endif %}">
+                <div class="resident-result-main">
+                    <div>
+                        <strong>{{ person.name }}</strong>
+                        <p>{{ person.living_status }} · {{ person.relationship }}</p>
+                    </div>
+                    <button class="btn-secondary" type="button" data-modal-url="{{ person.modal_url }}"><i class="bi bi-door-open"></i> Xonadon</button>
+                </div>
+                <div class="resident-result-meta">
+                    <span><i class="bi bi-building"></i> {{ person.entrance_number }}-podyezd</span>
+                    <span><i class="bi bi-grid-3x3-gap"></i> {{ person.room_number }}-xonadon</span>
+                    <span><i class="bi bi-telephone"></i> {{ person.phone|default:"Telefon kiritilmagan" }}</span>
+                </div>
+            </article>
+            {% empty %}
+            <p class="empty">Ushbu ko'rsatkich bo'yicha shaxs topilmadi.</p>
+            {% endfor %}
+        </div>
     </div>
     {% endfor %}
 </section>
+{% endif %}

@@ -61,6 +61,21 @@ document.addEventListener("click", async (event) => {
     root.innerHTML = await response.text();
     return;
   }
+  const riskCard = event.target.closest("[data-risk-card]");
+  if (riskCard) {
+    const target = riskCard.dataset.riskCard;
+    document.querySelectorAll("[data-risk-card]").forEach((card) => card.classList.toggle("active", card === riskCard));
+    document.querySelectorAll("[data-risk-panel]").forEach((panel) => {
+      panel.classList.toggle("hidden", panel.dataset.riskPanel !== target);
+    });
+    document.querySelector(`[data-risk-panel="${target}"]`)?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    return;
+  }
+  if (event.target.closest("[data-risk-panel-close]")) {
+    document.querySelectorAll("[data-risk-card]").forEach((card) => card.classList.remove("active"));
+    event.target.closest("[data-risk-panel]")?.classList.add("hidden");
+    return;
+  }
   const renderComplaintsButton = event.target.closest("[data-render-complaints]");
   if (renderComplaintsButton) {
     renderComplaintNotes();
@@ -301,7 +316,7 @@ function initResidentSearch() {
     empty.classList.add("hidden");
     matches.forEach((resident) => {
       const card = document.createElement("article");
-      const riskClass = resident.risk_count >= 5 ? "red" : resident.risk_count > 0 ? "yellow" : "green";
+      const riskClass = resident.risk_count >= 4 ? "red" : resident.risk_count > 0 ? "yellow" : "green";
       card.className = `resident-result-card ${riskClass}`;
       const risks = resident.risks?.length
         ? resident.risks.map((risk) => `<span>${escapeHtml(risk)}</span>`).join("")
