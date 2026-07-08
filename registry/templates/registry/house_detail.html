@@ -8,24 +8,36 @@
             <h2>{{ house.house_number }}-uy</h2>
             <p class="mt-1 text-[#5C5E62]">{{ house.street_name }}</p>
         </div>
-        <div class="grid grid-cols-2 gap-3 lg:grid-cols-4">
-            <div class="mini-stat danger"><span>Og'ir nazorat</span><strong>{{ serious_attention }}</strong></div>
-            <div class="mini-stat danger"><span>JIEM / qamalgan</span><strong>{{ penal_institution_count }}</strong></div>
-            <div class="mini-stat"><span>Profilaktika</span><strong>{{ preventive_register_count }}</strong></div>
-            <div class="mini-stat good"><span>Ijtimoiy yordam</span><strong>{{ social_assistance_count }}</strong></div>
+        <div class="house-security-list">
+            <span class="{% if house.entrance_camera %}ok{% endif %}"><i class="bi bi-camera-video"></i> Podyezd kamerasi: {% if house.entrance_camera %}bor{% else %}yo'q{% endif %}</span>
+            <span class="{% if house.yard_camera %}ok{% endif %}"><i class="bi bi-camera"></i> Uy atrofi kamerasi: {% if house.yard_camera %}{{ house.yard_camera_count|default:"bor" }} ta{% else %}yo'q{% endif %}</span>
+            <span class="{% if house.entrance_sos_button %}ok{% endif %}"><i class="bi bi-bell"></i> SOS tugma: {% if house.entrance_sos_button %}bor{% else %}yo'q{% endif %}</span>
         </div>
     </div>
+</section>
+
+<section class="risk-card-grid mb-5">
+    <div class="risk-card red"><span>Muqaddam sudlanganlar</span><strong>{{ previously_convicted_count }}</strong></div>
+    <div class="risk-card red"><span>Jazoni ijro etish muassasasi bilan bog'liq holatlar</span><strong>{{ penal_institution_count }}</strong></div>
+    <div class="risk-card red"><span>Probatsiya hisobida turuvchilar</span><strong>{{ probation_count }}</strong></div>
+    <div class="risk-card red"><span>Ma'muriy nazoratda turuvchilar</span><strong>{{ administrative_supervision_count }}</strong></div>
+    <div class="risk-card red"><span>Profilaktik hisob ro'yxatida turuvchilar</span><strong>{{ preventive_register_count }}</strong></div>
+    <div class="risk-card red"><span>DEO ro'yxatida turuvchilar</span><strong>{{ deo_register_count }}</strong></div>
+    <div class="risk-card yellow"><span>Spirtli ichimliklarga ruju qo'yganlar</span><strong>{{ alcohol_addiction_count }}</strong></div>
+    <div class="risk-card yellow"><span>Notinch oila sifatida qayd etilgan xonadonlar</span><strong>{{ troubled_family_count }}</strong></div>
+    <div class="risk-card yellow"><span>Giyohvandlik ro'yxatida turuvchilar</span><strong>{{ drug_addiction_count }}</strong></div>
+    <div class="risk-card yellow"><span>Murojaat tushgan xonadonlar</span><strong>{{ complaints_count }}</strong></div>
 </section>
 
 <section class="panel mb-5">
     <div class="flex flex-col justify-between gap-4 md:flex-row md:items-center">
         <div>
-            <h2>Podyezdlar bo'yicha og'ir nazorat</h2>
+            <h2>Podyezdlar bo'yicha e'tibor holati</h2>
             <p class="mt-1 text-sm text-[#5C5E62]">
                 {% if max_entrance and max_entrance.serious_count %}
                     Eng ko'p e'tibor {{ max_entrance.number }}-podyezdda: {{ max_entrance.serious_count }} nafar.
                 {% else %}
-                    Hozircha og'ir nazorat bo'yicha qayd yo'q.
+                    Hozircha e'tibor talab qiladigan qayd yo'q.
                 {% endif %}
             </p>
         </div>
@@ -38,13 +50,19 @@
     <div class="entrance-block">
         <div class="entrance-title">
             <span>{{ entrance.number }}-podyezd</span>
-            <small>Og'ir: {{ entrance.serious_count }} · JIEM: {{ entrance.penal_count }} · Ijtimoiy: {{ entrance.social_count }}</small>
+            <small>Qizil: {{ entrance.red_rooms }} · Sariq: {{ entrance.yellow_rooms }} · Yashil: {{ entrance.green_rooms }}</small>
         </div>
         <div class="apartment-grid">
             {% for room in entrance.rooms %}
-            <button class="apartment-cell {% if room.serious_count %}occupied danger-room{% elif room.resident_count %}occupied{% else %}empty{% endif %}" type="button" data-modal-url="{% url 'registry:apartment_info_modal' room.pk %}">
+            <button class="apartment-cell {% if room.risk_factor_count >= 5 %}risk-red{% elif room.risk_factor_count > 0 %}risk-yellow{% elif room.resident_count %}risk-green{% else %}empty{% endif %}" type="button" data-modal-url="{% url 'registry:apartment_info_modal' room.pk %}">
                 <strong>{{ room.room_number }}</strong>
-                <span>{% if room.serious_count %}{{ room.serious_count }} og'ir{% elif room.resident_count %}{{ room.resident_count }} a'zo{% else %}bo'sh{% endif %}</span>
+                <span>
+                    {% if room.resident_count %}
+                        {{ room.risk_factor_count }} ta
+                    {% else %}
+                        bo'sh
+                    {% endif %}
+                </span>
             </button>
             {% endfor %}
         </div>

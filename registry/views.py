@@ -12,13 +12,35 @@ from .forms import HouseForm, ResidentBasicForm, ResidentOwnerForm, RoomStatusFo
 from .models import House, RelatedPerson, Resident, Room
 
 
-SERIOUS_CRIME_Q = (
+HIGH_RISK_Q = (
     Q(previously_convicted=True)
     | Q(penal_institution=True)
     | Q(probation=True)
     | Q(administrative_supervision=True)
     | Q(preventive_register=True)
+    | Q(deo_register=True)
+)
+MEDIUM_RISK_Q = (
+    Q(alcohol_addiction=True)
+    | Q(troubled_family=True)
     | Q(drug_addiction_register=True)
+    | Q(has_complaints=True)
+)
+ATTENTION_Q = HIGH_RISK_Q | MEDIUM_RISK_Q
+SERIOUS_CRIME_Q = ATTENTION_Q
+HIGH_RISK_ROOM_Q = (
+    Q(residents__previously_convicted=True)
+    | Q(residents__penal_institution=True)
+    | Q(residents__probation=True)
+    | Q(residents__administrative_supervision=True)
+    | Q(residents__preventive_register=True)
+    | Q(residents__deo_register=True)
+)
+MEDIUM_RISK_ROOM_Q = (
+    Q(residents__alcohol_addiction=True)
+    | Q(residents__troubled_family=True)
+    | Q(residents__drug_addiction_register=True)
+    | Q(residents__has_complaints=True)
 )
 SERIOUS_ROOM_Q = (
     Q(residents__previously_convicted=True)
@@ -26,7 +48,11 @@ SERIOUS_ROOM_Q = (
     | Q(residents__probation=True)
     | Q(residents__administrative_supervision=True)
     | Q(residents__preventive_register=True)
+    | Q(residents__deo_register=True)
+    | Q(residents__alcohol_addiction=True)
+    | Q(residents__troubled_family=True)
     | Q(residents__drug_addiction_register=True)
+    | Q(residents__has_complaints=True)
 )
 SERIOUS_HOUSE_Q = (
     Q(rooms__residents__previously_convicted=True)
@@ -34,8 +60,33 @@ SERIOUS_HOUSE_Q = (
     | Q(rooms__residents__probation=True)
     | Q(rooms__residents__administrative_supervision=True)
     | Q(rooms__residents__preventive_register=True)
+    | Q(rooms__residents__deo_register=True)
+    | Q(rooms__residents__alcohol_addiction=True)
+    | Q(rooms__residents__troubled_family=True)
     | Q(rooms__residents__drug_addiction_register=True)
+    | Q(rooms__residents__has_complaints=True)
 )
+
+RISK_FACTOR_FIELDS = [
+    "previously_convicted",
+    "penal_institution",
+    "probation",
+    "administrative_supervision",
+    "preventive_register",
+    "deo_register",
+    "alcohol_addiction",
+    "troubled_family",
+    "drug_addiction_register",
+    "has_complaints",
+]
+
+
+def resident_risk_factor_count(resident):
+    return sum(1 for field in RISK_FACTOR_FIELDS if getattr(resident, field))
+
+
+def room_risk_factor_count(room):
+    return sum(resident_risk_factor_count(resident) for resident in room.residents.all())
 
 
 def dashboard(request):
@@ -229,7 +280,9 @@ def house_detail(request, pk):
         resident_count=Count("residents", distinct=True),
         violation_count=Count("residents", filter=Q(residents__has_violation=True), distinct=True),
         serious_count=Count("residents", filter=SERIOUS_ROOM_Q, distinct=True),
-    )
+        high_risk_count=Count("residents", filter=HIGH_RISK_ROOM_Q, distinct=True),
+        medium_risk_count=Count("residents", filter=MEDIUM_RISK_ROOM_Q, distinct=True),
+    ).prefetch_related("residents")
     if query:
         rooms = rooms.filter(
             Q(room_number__icontains=query)
@@ -248,7 +301,14 @@ def house_detail(request, pk):
     entrance_risk_values = []
     for entrance_number in range(1, house.entrance_count + 1):
         entrance_rooms = list(rooms.filter(entrance_number=entrance_number))
-        serious_count = house_residents.filter(room__entrance_number=entrance_number).filter(SERIOUS_CRIME_Q).distinct().count()
+        for room in entrance_rooms:
+            room.risk_factor_count = room_risk_factor_count(room)
+        red_rooms = sum(1 for room in entrance_rooms if room.risk_factor_count >= 5)
+        yellow_rooms = sum(1 for room in entrance_rooms if 0 < room.risk_factor_count < 5)
+        green_rooms = sum(1 for room in entrance_rooms if room.resident_count and room.risk_factor_count == 0)
+        serious_count = house_residents.filter(room__entrance_number=entrance_number).filter(ATTENTION_Q).distinct().count()
+        high_count = house_residents.filter(room__entrance_number=entrance_number).filter(HIGH_RISK_Q).distinct().count()
+        medium_count = house_residents.filter(room__entrance_number=entrance_number).filter(MEDIUM_RISK_Q).distinct().count()
         penal_count = house_residents.filter(room__entrance_number=entrance_number, penal_institution=True).count()
         social_count = house_residents.filter(room__entrance_number=entrance_number, needs_social_assistance=True).count()
         entrance_risk_values.append(serious_count)
@@ -256,6 +316,11 @@ def house_detail(request, pk):
             "number": entrance_number,
             "rooms": entrance_rooms,
             "serious_count": serious_count,
+            "high_count": high_count,
+            "medium_count": medium_count,
+            "red_rooms": red_rooms,
+            "yellow_rooms": yellow_rooms,
+            "green_rooms": green_rooms,
             "penal_count": penal_count,
             "social_count": social_count,
         })
@@ -267,9 +332,19 @@ def house_detail(request, pk):
         "entrance_blocks": entrance_blocks,
         "query": query,
         "filter_value": filter_value,
-        "serious_attention": house_residents.filter(SERIOUS_CRIME_Q).distinct().count(),
+        "serious_attention": house_residents.filter(ATTENTION_Q).distinct().count(),
+        "high_risk_attention": house_residents.filter(HIGH_RISK_Q).distinct().count(),
+        "medium_risk_attention": house_residents.filter(MEDIUM_RISK_Q).distinct().count(),
+        "previously_convicted_count": house_residents.filter(previously_convicted=True).count(),
         "penal_institution_count": house_residents.filter(penal_institution=True).count(),
+        "probation_count": house_residents.filter(probation=True).count(),
+        "administrative_supervision_count": house_residents.filter(administrative_supervision=True).count(),
         "preventive_register_count": house_residents.filter(preventive_register=True).count(),
+        "deo_register_count": house_residents.filter(deo_register=True).count(),
+        "alcohol_addiction_count": house_residents.filter(alcohol_addiction=True).count(),
+        "troubled_family_count": house_residents.filter(troubled_family=True).count(),
+        "drug_addiction_count": house_residents.filter(drug_addiction_register=True).count(),
+        "complaints_count": house_residents.filter(has_complaints=True).count(),
         "social_assistance_count": house_residents.filter(needs_social_assistance=True).count(),
         "max_entrance": max_entrance,
         "entrance_risk_json": json.dumps(entrance_risk_values),

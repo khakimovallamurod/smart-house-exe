@@ -33,22 +33,47 @@ class HouseForm(StyledModelForm):
         "street_name": "Masalan: Yangi hayot",
         "entrance_count": "Masalan: 4",
         "apartments_per_entrance": "Masalan: 10",
+        "yard_camera_count": "Masalan: 4",
     }
 
     class Meta:
         model = House
-        fields = ["street_name", "house_number", "entrance_count", "apartments_per_entrance", "color"]
+        fields = [
+            "street_name",
+            "house_number",
+            "entrance_count",
+            "apartments_per_entrance",
+            "color",
+            "entrance_camera",
+            "yard_camera",
+            "yard_camera_count",
+            "entrance_sos_button",
+        ]
         labels = {
             "street_name": "Mahalla nomi",
             "house_number": "Uy raqami",
             "entrance_count": "Podyezd soni",
             "apartments_per_entrance": "1 ta podyezddagi xonadon soni",
             "color": "Uy rangi",
+            "entrance_camera": "Podyezd eshigi oldiga kamera qo'yilganmi?",
+            "yard_camera": "Uy atrofi kameralashtirilganmi?",
+            "yard_camera_count": "Uy atrofidagi kameralar soni",
+            "entrance_sos_button": "Podyezdga SOS tugma qo'yilganmi?",
         }
         widgets = {
             "entrance_count": forms.NumberInput(attrs={"min": 1}),
             "apartments_per_entrance": forms.NumberInput(attrs={"min": 1}),
+            "entrance_camera": forms.RadioSelect(choices=BOOLEAN_CHOICES),
+            "yard_camera": forms.RadioSelect(choices=BOOLEAN_CHOICES),
+            "yard_camera_count": forms.NumberInput(attrs={"min": 1}),
+            "entrance_sos_button": forms.RadioSelect(choices=BOOLEAN_CHOICES),
         }
+
+    def clean(self):
+        cleaned = super().clean()
+        if not cleaned.get("yard_camera"):
+            cleaned["yard_camera_count"] = None
+        return cleaned
 
     def clean_entrance_count(self):
         entrance_count = self.cleaned_data["entrance_count"]
@@ -116,20 +141,36 @@ class ResidentOwnerForm(StyledModelForm):
         "fullname": "Masalan: Ali Valiyev",
         "phone": "+998 90 123 45 67",
         "passport": "Masalan: AB 1234567",
+        "occupation": "Masalan: haydovchi",
+        "workplace": "Masalan: Samarqand shahar IIB",
+        "education": "Masalan: Samarqand davlat universiteti",
         "abroad_country": "Masalan: Rossiya",
         "abroad_year": "Masalan: 2024",
         "abroad_duration": "Masalan: 2 yil",
         "abroad_reason": "Nima sababdan chetga chiqqanini yozing",
         "conviction_year": "Masalan: 2020",
+        "conviction_article": "Masalan: 169-modda",
+        "conviction_part": "Masalan: 2-qism",
         "conviction_note": "Qisqacha izoh",
         "penal_institution_location": "Masalan: 3-son JIEM",
         "penal_institution_note": "Qayerdaligi yoki qo'shimcha izoh",
         "probation_start_year": "Boshlanish yili",
         "probation_end_year": "Tugash yili",
+        "probation_article": "Masalan: 169-modda",
+        "probation_part": "Masalan: 2-qism",
         "probation_note": "Probatsiya bo'yicha izoh",
         "administrative_supervision_start_year": "Boshlanish yili",
         "administrative_supervision_end_year": "Tugash yili",
         "preventive_register_article": "Masalan: tegishli modda",
+        "preventive_register_start_year": "Boshlanish yili",
+        "preventive_register_end_year": "Tugash yili",
+        "preventive_register_part": "Masalan: 2-qism",
+        "preventive_register_note": "Profilaktik hisob bo'yicha izoh",
+        "deo_start_year": "Boshlanish yili",
+        "deo_end_year": "Tugash yili",
+        "deo_article": "Masalan: tegishli modda",
+        "deo_part": "Masalan: qismi",
+        "deo_note": "DEO ro'yxati bo'yicha izoh",
         "alcohol_addiction_note": "Spirtli ichimlik bo'yicha izoh",
         "troubled_family_note": "Kim bilan va nima sababdan notinchligini yozing",
         "weapon_count": "Masalan: 1",
@@ -138,6 +179,7 @@ class ResidentOwnerForm(StyledModelForm):
         "social_assistance_note": "Qanday yordamga muhtojligini yozing",
         "complaint_count": "Murojaatlar soni",
         "social_conclusion_note": "Ijtimoiy xulosa izohi",
+        "joint_conclusion_note": "Qo'shma xulosa izohi",
         "notes": "Qo'shimcha izoh",
     }
 
@@ -145,6 +187,10 @@ class ResidentOwnerForm(StyledModelForm):
         model = Resident
         fields = [
             "living_status",
+            "has_rental_contract",
+            "rental_contract_file",
+            "has_temporary_registration",
+            "temporary_registration_file",
             "relationship",
             "photo",
             "fullname",
@@ -152,6 +198,11 @@ class ResidentOwnerForm(StyledModelForm):
             "gender",
             "phone",
             "passport",
+            "is_working",
+            "occupation",
+            "workplace",
+            "is_studying",
+            "education",
             "long_abroad",
             "abroad_country",
             "abroad_year",
@@ -159,6 +210,8 @@ class ResidentOwnerForm(StyledModelForm):
             "abroad_reason",
             "previously_convicted",
             "conviction_year",
+            "conviction_article",
+            "conviction_part",
             "conviction_note",
             "penal_institution",
             "penal_institution_location",
@@ -166,13 +219,25 @@ class ResidentOwnerForm(StyledModelForm):
             "probation",
             "probation_start_year",
             "probation_end_year",
+            "probation_article",
+            "probation_part",
             "probation_note",
             "administrative_supervision",
             "administrative_supervision_start_year",
             "administrative_supervision_end_year",
             "preventive_register",
+            "preventive_register_start_year",
+            "preventive_register_end_year",
             "preventive_register_date",
             "preventive_register_article",
+            "preventive_register_part",
+            "preventive_register_note",
+            "deo_register",
+            "deo_start_year",
+            "deo_end_year",
+            "deo_article",
+            "deo_part",
+            "deo_note",
             "alcohol_addiction",
             "alcohol_addiction_note",
             "troubled_family",
@@ -187,17 +252,22 @@ class ResidentOwnerForm(StyledModelForm):
             "needs_social_assistance",
             "social_assistance_note",
             "security_panel_connected",
-            "entrance_camera",
-            "yard_camera",
-            "entrance_sos_button",
             "has_complaints",
             "complaint_count",
             "social_conclusion",
+            "social_conclusion_file",
             "social_conclusion_note",
+            "joint_conclusion",
+            "joint_conclusion_file",
+            "joint_conclusion_note",
             "notes",
         ]
         labels = {
             "living_status": "Yashash holati",
+            "has_rental_contract": "Ijara shartnomasi bormi?",
+            "rental_contract_file": "Ijara shartnomasi fayli",
+            "has_temporary_registration": "Vaqtinchalik propiska bormi?",
+            "temporary_registration_file": "Vaqtinchalik propiska fayli",
             "relationship": "Qarindoshlik",
             "photo": "Rasm",
             "fullname": "F.I.Sh",
@@ -205,6 +275,11 @@ class ResidentOwnerForm(StyledModelForm):
             "gender": "Jinsi",
             "phone": "Telefon raqami",
             "passport": "Pasport seriyasi",
+            "is_working": "Ushbu shaxs ishlaydimi?",
+            "occupation": "Kasbi",
+            "workplace": "Qayerda ishlaydi?",
+            "is_studying": "Ushbu shaxs o'qiydimi?",
+            "education": "Qayerda o'qiydi?",
             "long_abroad": "Ushbu shaxs uzoq muddatga chet davlatga chiqib ketganmi?",
             "abroad_country": "Qaysi davlat",
             "abroad_year": "Nechanchi yil",
@@ -212,6 +287,8 @@ class ResidentOwnerForm(StyledModelForm):
             "abroad_reason": "Chetga chiqish sababi",
             "previously_convicted": "Ushbu shaxs muqaddam sudlanganmi?",
             "conviction_year": "Nechanchi yil",
+            "conviction_article": "Modda",
+            "conviction_part": "Qism",
             "conviction_note": "Izoh",
             "penal_institution": "Jazoni ijro etish muassasasi bilan bog'liq holati bormi?",
             "penal_institution_location": "Qayerdaligi",
@@ -219,13 +296,25 @@ class ResidentOwnerForm(StyledModelForm):
             "probation": "Ushbu shaxs probatsiya hisobida turadimi?",
             "probation_start_year": "Boshlanish yili",
             "probation_end_year": "Tugash yili",
+            "probation_article": "Modda",
+            "probation_part": "Qism",
             "probation_note": "Izoh",
             "administrative_supervision": "Ushbu shaxs ma'muriy nazoratda turadimi?",
             "administrative_supervision_start_year": "Boshlanish yili",
             "administrative_supervision_end_year": "Tugash yili",
-            "preventive_register": "Ushbu shaxs profilaktika ro'yxatida turadimi?",
+            "preventive_register": "Ushbu shaxs profilaktik hisob ro'yxatida turadimi?",
+            "preventive_register_start_year": "Boshlanish yili",
+            "preventive_register_end_year": "Tugash yili",
             "preventive_register_date": "Qachondan beri",
             "preventive_register_article": "Qaysi modda",
+            "preventive_register_part": "Qism",
+            "preventive_register_note": "Izoh",
+            "deo_register": "DEO ro'yxatida turadimi?",
+            "deo_start_year": "Boshlanish yili",
+            "deo_end_year": "Tugash yili",
+            "deo_article": "Modda",
+            "deo_part": "Qism",
+            "deo_note": "Izoh",
             "alcohol_addiction": "Ushbu shaxs spirtli ichimliklarga ruju qo'yganmi?",
             "alcohol_addiction_note": "Izoh",
             "troubled_family": "Ushbu xonadon notinch oila hisoblanadimi?",
@@ -240,18 +329,23 @@ class ResidentOwnerForm(StyledModelForm):
             "needs_social_assistance": "Ushbu xonadon ijtimoiy yordamga muhtojmi?",
             "social_assistance_note": "Izoh",
             "security_panel_connected": "Xonadon qo'riqlov pultiga ulanganmi?",
-            "entrance_camera": "Podyezd eshigi oldiga kamera qo'yilganmi?",
-            "yard_camera": "Uy atrofi kameralashtirilganmi?",
-            "entrance_sos_button": "Podyezdga SOS tugma qo'yilganmi?",
             "has_complaints": "Mazkur xonadondan murojaat tushganmi?",
             "complaint_count": "Murojaatlar soni",
             "social_conclusion": "Ijtimoiy xulosa berilganmi?",
+            "social_conclusion_file": "Ijtimoiy xulosa fayli",
             "social_conclusion_note": "Izoh",
+            "joint_conclusion": "Qo'shma xulosa berilganmi?",
+            "joint_conclusion_file": "Qo'shma xulosa fayli",
+            "joint_conclusion_note": "Izoh",
             "notes": "Qo'shimcha izoh",
         }
         widgets = {
             "living_status": forms.RadioSelect,
+            "has_rental_contract": forms.RadioSelect(choices=BOOLEAN_CHOICES),
+            "has_temporary_registration": forms.RadioSelect(choices=BOOLEAN_CHOICES),
             "birth_date": forms.DateInput(attrs={"type": "date"}),
+            "is_working": forms.RadioSelect(choices=BOOLEAN_CHOICES),
+            "is_studying": forms.RadioSelect(choices=BOOLEAN_CHOICES),
             "long_abroad": forms.RadioSelect(choices=BOOLEAN_CHOICES),
             "previously_convicted": forms.RadioSelect(choices=BOOLEAN_CHOICES),
             "penal_institution": forms.RadioSelect(choices=BOOLEAN_CHOICES),
@@ -259,6 +353,7 @@ class ResidentOwnerForm(StyledModelForm):
             "administrative_supervision": forms.RadioSelect(choices=BOOLEAN_CHOICES),
             "preventive_register": forms.RadioSelect(choices=BOOLEAN_CHOICES),
             "preventive_register_date": forms.DateInput(attrs={"type": "date"}),
+            "deo_register": forms.RadioSelect(choices=BOOLEAN_CHOICES),
             "alcohol_addiction": forms.RadioSelect(choices=BOOLEAN_CHOICES),
             "troubled_family": forms.RadioSelect(choices=BOOLEAN_CHOICES),
             "mental_health_register": forms.RadioSelect(choices=BOOLEAN_CHOICES),
@@ -267,24 +362,39 @@ class ResidentOwnerForm(StyledModelForm):
             "drug_addiction_register": forms.RadioSelect(choices=BOOLEAN_CHOICES),
             "needs_social_assistance": forms.RadioSelect(choices=BOOLEAN_CHOICES),
             "security_panel_connected": forms.RadioSelect(choices=BOOLEAN_CHOICES),
-            "entrance_camera": forms.RadioSelect(choices=BOOLEAN_CHOICES),
-            "yard_camera": forms.RadioSelect(choices=BOOLEAN_CHOICES),
-            "entrance_sos_button": forms.RadioSelect(choices=BOOLEAN_CHOICES),
             "has_complaints": forms.RadioSelect(choices=BOOLEAN_CHOICES),
             "social_conclusion": forms.RadioSelect(choices=BOOLEAN_CHOICES),
+            "joint_conclusion": forms.RadioSelect(choices=BOOLEAN_CHOICES),
             "abroad_reason": forms.Textarea(attrs={"rows": 3}),
             "conviction_note": forms.Textarea(attrs={"rows": 3}),
             "penal_institution_note": forms.Textarea(attrs={"rows": 3}),
             "probation_note": forms.Textarea(attrs={"rows": 3}),
+            "preventive_register_note": forms.Textarea(attrs={"rows": 3}),
+            "deo_note": forms.Textarea(attrs={"rows": 3}),
             "alcohol_addiction_note": forms.Textarea(attrs={"rows": 3}),
             "troubled_family_note": forms.Textarea(attrs={"rows": 3}),
             "social_assistance_note": forms.Textarea(attrs={"rows": 3}),
             "social_conclusion_note": forms.Textarea(attrs={"rows": 3}),
+            "joint_conclusion_note": forms.Textarea(attrs={"rows": 3}),
             "notes": forms.Textarea(attrs={"rows": 3}),
         }
 
     def clean(self):
         cleaned = super().clean()
+        if cleaned.get("living_status") != "tenant":
+            cleaned["has_rental_contract"] = False
+            cleaned["rental_contract_file"] = None
+            cleaned["has_temporary_registration"] = False
+            cleaned["temporary_registration_file"] = None
+        if not cleaned.get("has_rental_contract"):
+            cleaned["rental_contract_file"] = None
+        if not cleaned.get("has_temporary_registration"):
+            cleaned["temporary_registration_file"] = None
+        if not cleaned.get("is_working"):
+            cleaned["occupation"] = ""
+            cleaned["workplace"] = ""
+        if not cleaned.get("is_studying"):
+            cleaned["education"] = ""
         if not cleaned.get("long_abroad"):
             cleaned["abroad_country"] = ""
             cleaned["abroad_year"] = None
@@ -292,6 +402,8 @@ class ResidentOwnerForm(StyledModelForm):
             cleaned["abroad_reason"] = ""
         if not cleaned.get("previously_convicted"):
             cleaned["conviction_year"] = None
+            cleaned["conviction_article"] = ""
+            cleaned["conviction_part"] = ""
             cleaned["conviction_note"] = ""
         if not cleaned.get("penal_institution"):
             cleaned["penal_institution_location"] = ""
@@ -299,13 +411,25 @@ class ResidentOwnerForm(StyledModelForm):
         if not cleaned.get("probation"):
             cleaned["probation_start_year"] = None
             cleaned["probation_end_year"] = None
+            cleaned["probation_article"] = ""
+            cleaned["probation_part"] = ""
             cleaned["probation_note"] = ""
         if not cleaned.get("administrative_supervision"):
             cleaned["administrative_supervision_start_year"] = None
             cleaned["administrative_supervision_end_year"] = None
         if not cleaned.get("preventive_register"):
+            cleaned["preventive_register_start_year"] = None
+            cleaned["preventive_register_end_year"] = None
             cleaned["preventive_register_date"] = None
             cleaned["preventive_register_article"] = ""
+            cleaned["preventive_register_part"] = ""
+            cleaned["preventive_register_note"] = ""
+        if not cleaned.get("deo_register"):
+            cleaned["deo_start_year"] = None
+            cleaned["deo_end_year"] = None
+            cleaned["deo_article"] = ""
+            cleaned["deo_part"] = ""
+            cleaned["deo_note"] = ""
         if not cleaned.get("alcohol_addiction"):
             cleaned["alcohol_addiction_note"] = ""
         if not cleaned.get("troubled_family"):
@@ -320,5 +444,9 @@ class ResidentOwnerForm(StyledModelForm):
         if not cleaned.get("has_complaints"):
             cleaned["complaint_count"] = None
         if not cleaned.get("social_conclusion"):
+            cleaned["social_conclusion_file"] = None
             cleaned["social_conclusion_note"] = ""
+        if not cleaned.get("joint_conclusion"):
+            cleaned["joint_conclusion_file"] = None
+            cleaned["joint_conclusion_note"] = ""
         return cleaned

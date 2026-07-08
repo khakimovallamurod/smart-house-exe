@@ -61,6 +61,11 @@ document.addEventListener("click", async (event) => {
     root.innerHTML = await response.text();
     return;
   }
+  const renderComplaintsButton = event.target.closest("[data-render-complaints]");
+  if (renderComplaintsButton) {
+    renderComplaintNotes();
+    return;
+  }
   const residentSwitch = event.target.closest("[data-resident-target]");
   if (residentSwitch) {
     const modal = residentSwitch.closest(".modal-panel");
@@ -231,10 +236,18 @@ function syncConditionalFields() {
   document.querySelectorAll("[data-conditional-for]").forEach((section) => {
     const fieldName = section.dataset.conditionalFor;
     const checked = document.querySelector(`input[name="${fieldName}"]:checked`);
-    const isYes = checked && (checked.value === "True" || checked.value === "true" || checked.value === "1");
-    section.classList.toggle("hidden", !isYes);
+    const expectedValue = section.dataset.conditionalValue;
+    const isActive = checked && (
+      expectedValue ? checked.value === expectedValue : (checked.value === "True" || checked.value === "true" || checked.value === "1")
+    );
+    section.classList.toggle("hidden", !isActive);
     section.querySelectorAll("input, textarea, select").forEach((field) => {
-      field.disabled = !isYes;
+      field.disabled = !isActive;
+    });
+  });
+  document.querySelectorAll("[data-conditional-for].hidden").forEach((section) => {
+    section.querySelectorAll("input, textarea, select").forEach((field) => {
+      field.disabled = true;
     });
   });
 }
@@ -242,13 +255,11 @@ function syncConditionalFields() {
 document.addEventListener("change", (event) => {
   if (event.target.matches('input[type="radio"]')) {
     syncConditionalFields();
-    renderComplaintNotes();
   }
   if (event.target.matches(".file-picker input[type='file']")) {
     const label = event.target.closest(".file-picker").querySelector("[data-file-name]");
     label.textContent = event.target.files?.[0]?.name || "Rasm tanlash";
   }
-  if (event.target.name === "complaint_count") renderComplaintNotes();
 });
 
 syncConditionalFields();
@@ -275,4 +286,11 @@ function renderComplaintNotes() {
   }
 }
 
-renderComplaintNotes();
+const complaintNotesContainer = document.getElementById("complaint-notes");
+if (complaintNotesContainer) {
+  try {
+    if (JSON.parse(complaintNotesContainer.dataset.existing || "[]").length) renderComplaintNotes();
+  } catch (_) {
+    // Existing notes are optional.
+  }
+}

@@ -16,7 +16,7 @@
     <section class="form-section">
         <div class="form-section-title">
             <div>
-                <h3>Asosiy ma'lumotlar</h3>
+                <h3>1. Asosiy ma'lumotlar</h3>
                 <p>Shaxs uy egasi yoki ijarada yashovchi ekanligini belgilang va asosiy ma'lumotlarni kiriting.</p>
             </div>
         </div>
@@ -36,7 +36,38 @@
     </section>
 
     <section class="form-section">
-        <div class="form-section-title"><div><h3>Chet davlatga chiqish holati</h3><p>Uzoq muddatga chetga chiqqan bo'lsa, qaysi davlat, yil, muddat va sababini kiriting.</p></div></div>
+        <div class="form-section-title"><div><h3>2. Ijara ma'lumotlari</h3><p>Bu qism faqat ijarada yashovchi shaxslar uchun to'ldiriladi.</p></div></div>
+        <div class="conditional-fields grid gap-4 md:grid-cols-2" data-conditional-for="living_status" data-conditional-value="tenant">
+            <label><span class="label">{{ form.has_rental_contract.label }}</span>{{ form.has_rental_contract }}</label>
+            <div class="conditional-fields" data-conditional-for="has_rental_contract">
+                <label><span class="label">{{ form.rental_contract_file.label }}</span>{{ form.rental_contract_file }}</label>
+            </div>
+            <label><span class="label">{{ form.has_temporary_registration.label }}</span>{{ form.has_temporary_registration }}</label>
+            <div class="conditional-fields" data-conditional-for="has_temporary_registration">
+                <label><span class="label">{{ form.temporary_registration_file.label }}</span>{{ form.temporary_registration_file }}</label>
+            </div>
+        </div>
+    </section>
+
+    <section class="form-section">
+        <div class="form-section-title"><div><h3>3. Ish faoliyati</h3><p>Shaxs ishlasa, kasbi va ish joyini kiriting.</p></div></div>
+        <label><span class="label">{{ form.is_working.label }}</span>{{ form.is_working }}</label>
+        <div class="conditional-fields grid gap-4 md:grid-cols-2" data-conditional-for="is_working">
+            <label><span class="label">{{ form.occupation.label }}</span>{{ form.occupation }}</label>
+            <label><span class="label">{{ form.workplace.label }}</span>{{ form.workplace }}</label>
+        </div>
+    </section>
+
+    <section class="form-section">
+        <div class="form-section-title"><div><h3>4. O'qish faoliyati</h3><p>Shaxs o'qisa, ta'lim muassasasi nomini kiriting.</p></div></div>
+        <label><span class="label">{{ form.is_studying.label }}</span>{{ form.is_studying }}</label>
+        <div class="conditional-fields" data-conditional-for="is_studying">
+            <label><span class="label">{{ form.education.label }}</span>{{ form.education }}</label>
+        </div>
+    </section>
+
+    <section class="form-section">
+        <div class="form-section-title"><div><h3>5. Chet davlatga chiqish holati</h3><p>Uzoq muddatga chetga chiqqan bo'lsa, qaysi davlat, yil, muddat va sababini kiriting.</p></div></div>
         <label><span class="label">{{ form.long_abroad.label }}</span>{{ form.long_abroad }}</label>
         <div class="conditional-fields grid gap-4 md:grid-cols-2" data-conditional-for="long_abroad">
             <label><span class="label">{{ form.abroad_country.label }}</span>{{ form.abroad_country }}</label>
@@ -47,11 +78,13 @@
     </section>
 
     <section class="form-section">
-        <div class="form-section-title"><div><h3>Sudlanganlik va jazoni ijro etish holati</h3><p>Sudlanganlik yoki jazoni ijro etish muassasasi bilan bog'liq ma'lumotlarni belgilang.</p></div></div>
+        <div class="form-section-title"><div><h3>6. Sudlanganlik va jazoni ijro etish holati</h3><p>Sudlanganlik yoki jazoni ijro etish muassasasi bilan bog'liq ma'lumotlarni belgilang.</p></div></div>
         <label><span class="label">{{ form.previously_convicted.label }}</span>{{ form.previously_convicted }}</label>
-        <div class="conditional-fields grid gap-4 md:grid-cols-2" data-conditional-for="previously_convicted">
+        <div class="conditional-fields grid gap-4 md:grid-cols-4" data-conditional-for="previously_convicted">
             <label><span class="label">{{ form.conviction_year.label }}</span>{{ form.conviction_year }}</label>
-            <label class="md:col-span-2"><span class="label">{{ form.conviction_note.label }}</span>{{ form.conviction_note }}</label>
+            <label><span class="label">{{ form.conviction_article.label }}</span>{{ form.conviction_article }}</label>
+            <label><span class="label">{{ form.conviction_part.label }}</span>{{ form.conviction_part }}</label>
+            <label class="md:col-span-4"><span class="label">{{ form.conviction_note.label }}</span>{{ form.conviction_note }}</label>
         </div>
         <div class="mt-4">
             <label><span class="label">{{ form.penal_institution.label }}</span>{{ form.penal_institution }}</label>
@@ -63,12 +96,14 @@
     </section>
 
     <section class="form-section">
-        <div class="form-section-title"><div><h3>Probatsiya va nazorat</h3><p>Probatsiya, ma'muriy nazorat va profilaktika ro'yxati bo'yicha ma'lumotlar.</p></div></div>
+        <div class="form-section-title"><div><h3>7. Probatsiya va nazorat</h3><p>Probatsiya, profilaktik hisob va DEO ro'yxati bo'yicha ma'lumotlar.</p></div></div>
         <label><span class="label">{{ form.probation.label }}</span>{{ form.probation }}</label>
-        <div class="conditional-fields grid gap-4 md:grid-cols-2" data-conditional-for="probation">
+        <div class="conditional-fields grid gap-4 md:grid-cols-4" data-conditional-for="probation">
             <label><span class="label">{{ form.probation_start_year.label }}</span>{{ form.probation_start_year }}</label>
             <label><span class="label">{{ form.probation_end_year.label }}</span>{{ form.probation_end_year }}</label>
-            <label class="md:col-span-2"><span class="label">{{ form.probation_note.label }}</span>{{ form.probation_note }}</label>
+            <label><span class="label">{{ form.probation_article.label }}</span>{{ form.probation_article }}</label>
+            <label><span class="label">{{ form.probation_part.label }}</span>{{ form.probation_part }}</label>
+            <label class="md:col-span-4"><span class="label">{{ form.probation_note.label }}</span>{{ form.probation_note }}</label>
         </div>
         <div class="mt-4">
             <label><span class="label">{{ form.administrative_supervision.label }}</span>{{ form.administrative_supervision }}</label>
@@ -79,15 +114,28 @@
         </div>
         <div class="mt-4">
             <label><span class="label">{{ form.preventive_register.label }}</span>{{ form.preventive_register }}</label>
-            <div class="conditional-fields grid gap-4 md:grid-cols-2" data-conditional-for="preventive_register">
-                <label><span class="label">{{ form.preventive_register_date.label }}</span>{{ form.preventive_register_date }}</label>
+            <div class="conditional-fields grid gap-4 md:grid-cols-4" data-conditional-for="preventive_register">
+                <label><span class="label">{{ form.preventive_register_start_year.label }}</span>{{ form.preventive_register_start_year }}</label>
+                <label><span class="label">{{ form.preventive_register_end_year.label }}</span>{{ form.preventive_register_end_year }}</label>
                 <label><span class="label">{{ form.preventive_register_article.label }}</span>{{ form.preventive_register_article }}</label>
+                <label><span class="label">{{ form.preventive_register_part.label }}</span>{{ form.preventive_register_part }}</label>
+                <label class="md:col-span-4"><span class="label">{{ form.preventive_register_note.label }}</span>{{ form.preventive_register_note }}</label>
+            </div>
+        </div>
+        <div class="mt-4">
+            <label><span class="label">{{ form.deo_register.label }}</span>{{ form.deo_register }}</label>
+            <div class="conditional-fields grid gap-4 md:grid-cols-4" data-conditional-for="deo_register">
+                <label><span class="label">{{ form.deo_start_year.label }}</span>{{ form.deo_start_year }}</label>
+                <label><span class="label">{{ form.deo_end_year.label }}</span>{{ form.deo_end_year }}</label>
+                <label><span class="label">{{ form.deo_article.label }}</span>{{ form.deo_article }}</label>
+                <label><span class="label">{{ form.deo_part.label }}</span>{{ form.deo_part }}</label>
+                <label class="md:col-span-4"><span class="label">{{ form.deo_note.label }}</span>{{ form.deo_note }}</label>
             </div>
         </div>
     </section>
 
     <section class="form-section">
-        <div class="form-section-title"><div><h3>Ijtimoiy va sog'liq holatlari</h3><p>Oilaviy notinchlik, tibbiy ro'yxatlar va ijtimoiy yordam ehtiyojlari.</p></div></div>
+        <div class="form-section-title"><div><h3>8. Ijtimoiy va sog'liq holatlari</h3><p>Oilaviy notinchlik, tibbiy ro'yxatlar va ijtimoiy yordam ehtiyojlari.</p></div></div>
         <label><span class="label">{{ form.alcohol_addiction.label }}</span>{{ form.alcohol_addiction }}</label>
         <div class="conditional-fields" data-conditional-for="alcohol_addiction"><label><span class="label">{{ form.alcohol_addiction_note.label }}</span>{{ form.alcohol_addiction_note }}</label></div>
         <div class="mt-4">
@@ -109,34 +157,47 @@
     </section>
 
     <section class="form-section">
-        <div class="form-section-title"><div><h3>Qurol va xavfsizlik vositalari</h3><p>Ov quroli va xonadon/podyezd xavfsizlik vositalari bo'yicha ma'lumotlar.</p></div></div>
+        <div class="form-section-title"><div><h3>9. Qurol va xonadon qo'riqlovi</h3><p>Ov quroli va xonadon qo'riqlov pulti bo'yicha ma'lumotlar.</p></div></div>
         <label><span class="label">{{ form.hunting_weapon.label }}</span>{{ form.hunting_weapon }}</label>
         <div class="conditional-fields grid gap-4 md:grid-cols-2" data-conditional-for="hunting_weapon">
             <label><span class="label">{{ form.weapon_count.label }}</span>{{ form.weapon_count }}</label>
             <label><span class="label">{{ form.weapon_model.label }}</span>{{ form.weapon_model }}</label>
         </div>
-        <div class="mt-4 grid gap-4 md:grid-cols-2">
+        <div class="mt-4">
             <label><span class="label">{{ form.security_panel_connected.label }}</span>{{ form.security_panel_connected }}</label>
-            <label><span class="label">{{ form.entrance_camera.label }}</span>{{ form.entrance_camera }}</label>
-            <label><span class="label">{{ form.yard_camera.label }}</span>{{ form.yard_camera }}</label>
-            <label><span class="label">{{ form.entrance_sos_button.label }}</span>{{ form.entrance_sos_button }}</label>
         </div>
     </section>
 
     <section class="form-section">
-        <div class="form-section-title"><div><h3>Murojaatlar va ijtimoiy xulosa</h3><p>Murojaat tushgan bo'lsa sonini kiriting, har biri uchun izoh maydoni ochiladi.</p></div></div>
+        <div class="form-section-title"><div><h3>10. Murojaatlar</h3><p>Murojaat tushgan bo'lsa sonini kiriting, har biri uchun izoh maydoni ochiladi.</p></div></div>
         <label><span class="label">{{ form.has_complaints.label }}</span>{{ form.has_complaints }}</label>
         <div class="conditional-fields" data-conditional-for="has_complaints">
-            <label><span class="label">{{ form.complaint_count.label }}</span>{{ form.complaint_count }}</label>
+            <div class="grid gap-3 md:grid-cols-[1fr_auto] md:items-end">
+                <label><span class="label">{{ form.complaint_count.label }}</span>{{ form.complaint_count }}</label>
+                <button class="btn-secondary" type="button" data-render-complaints><i class="bi bi-plus-lg"></i> Izohlarni ochish</button>
+            </div>
             <div id="complaint-notes" class="mt-4 space-y-3" data-existing='{{ complaint_notes_json|escape }}'></div>
-        </div>
-        <div class="mt-4">
-            <label><span class="label">{{ form.social_conclusion.label }}</span>{{ form.social_conclusion }}</label>
-            <div class="conditional-fields" data-conditional-for="social_conclusion"><label><span class="label">{{ form.social_conclusion_note.label }}</span>{{ form.social_conclusion_note }}</label></div>
         </div>
     </section>
 
     <section class="form-section">
+        <div class="form-section-title"><div><h3>11. Ijtimoiy va qo'shma xulosa</h3><p>Ijtimoiy yoki qo'shma xulosa berilgan bo'lsa, fayl va izohini kiriting.</p></div></div>
+        <label><span class="label">{{ form.social_conclusion.label }}</span>{{ form.social_conclusion }}</label>
+        <div class="conditional-fields grid gap-4 md:grid-cols-2" data-conditional-for="social_conclusion">
+            <label><span class="label">{{ form.social_conclusion_file.label }}</span>{{ form.social_conclusion_file }}</label>
+            <label class="md:col-span-2"><span class="label">{{ form.social_conclusion_note.label }}</span>{{ form.social_conclusion_note }}</label>
+        </div>
+        <div class="mt-4">
+            <label><span class="label">{{ form.joint_conclusion.label }}</span>{{ form.joint_conclusion }}</label>
+            <div class="conditional-fields grid gap-4 md:grid-cols-2" data-conditional-for="joint_conclusion">
+                <label><span class="label">{{ form.joint_conclusion_file.label }}</span>{{ form.joint_conclusion_file }}</label>
+                <label class="md:col-span-2"><span class="label">{{ form.joint_conclusion_note.label }}</span>{{ form.joint_conclusion_note }}</label>
+            </div>
+        </div>
+    </section>
+
+    <section class="form-section">
+        <div class="form-section-title"><div><h3>12. Qo'shimcha izoh</h3></div></div>
         <label><span class="label">{{ form.notes.label }}</span>{{ form.notes }}</label>
     </section>
 

@@ -41,6 +41,8 @@
                         <div><span>Jinsi</span><strong>{{ resident.get_gender_display|default:"-" }}</strong></div>
                         <div><span>Qarindoshlik</span><strong>{{ resident.get_relationship_display|default:"-" }}</strong></div>
                         <div><span>Pasport seriyasi</span><strong>{{ resident.passport|default:"-" }}</strong></div>
+                        <div><span>Ish faoliyati</span><strong>{% if resident.is_working %}{{ resident.workplace|default:resident.occupation|default:"Ishlaydi" }}{% else %}-{% endif %}</strong></div>
+                        <div><span>O'qish faoliyati</span><strong>{% if resident.is_studying %}{{ resident.education|default:"O'qiydi" }}{% else %}-{% endif %}</strong></div>
                     </div>
 
                     <div class="positive-sections">
@@ -85,15 +87,6 @@
                         {% endif %}
                         {% if resident.security_panel_connected %}
                         <div class="positive-card"><h4>Xonadon qo'riqlov pultiga ulangan</h4></div>
-                        {% endif %}
-                        {% if resident.entrance_camera %}
-                        <div class="positive-card"><h4>Podyezd eshigi oldida kamera bor</h4></div>
-                        {% endif %}
-                        {% if resident.yard_camera %}
-                        <div class="positive-card"><h4>Uy atrofi kameralashtirilgan</h4></div>
-                        {% endif %}
-                        {% if resident.entrance_sos_button %}
-                        <div class="positive-card"><h4>Podyezdga SOS tugma qo'yilgan</h4></div>
                         {% endif %}
                         {% if resident.has_complaints %}
                         <div class="positive-card"><h4>Xonadondan murojaat tushgan</h4><p>{{ resident.complaint_count }} ta</p>{% for note in resident.complaint_notes %}<small>{{ forloop.counter }}. {{ note }}</small>{% endfor %}</div>
