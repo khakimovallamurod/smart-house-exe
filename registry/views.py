@@ -80,6 +80,19 @@ RISK_FACTOR_FIELDS = [
     "has_complaints",
 ]
 
+RISK_METRICS = [
+    ("previously_convicted", "Muqaddam sudlanganlar", "red", "resident"),
+    ("penal_institution", "Jazoni ijro etish muassasasi bilan bog'liq holatlar", "red", "resident"),
+    ("probation", "Probatsiya hisobida turuvchilar", "red", "resident"),
+    ("administrative_supervision", "Ma'muriy nazoratda turuvchilar", "red", "resident"),
+    ("preventive_register", "Profilaktik hisob ro'yxatida turuvchilar", "red", "resident"),
+    ("deo_register", "DEO ro'yxatida turuvchilar", "red", "resident"),
+    ("alcohol_addiction", "Spirtli ichimliklarga ruju qo'yganlar", "yellow", "resident"),
+    ("troubled_family", "Notinch oila sifatida qayd etilgan xonadonlar", "yellow", "room"),
+    ("drug_addiction_register", "Giyohvandlik ro'yxatida turuvchilar", "yellow", "resident"),
+    ("has_complaints", "Murojaat tushgan xonadonlar", "yellow", "room"),
+]
+
 
 def resident_risk_factor_count(resident):
     return sum(1 for field in RISK_FACTOR_FIELDS if getattr(resident, field))
@@ -87,6 +100,19 @@ def resident_risk_factor_count(resident):
 
 def room_risk_factor_count(room):
     return sum(resident_risk_factor_count(resident) for resident in room.residents.all())
+
+
+def risk_metric_cards(residents):
+    cards = []
+    for field, label, color, count_type in RISK_METRICS:
+        matching = residents.filter(**{field: True})
+        count = matching.values("room_id").distinct().count() if count_type == "room" else matching.count()
+        cards.append({"key": field, "label": label, "color": color, "count": count})
+    return cards
+
+
+def resident_risk_labels(resident):
+    return [label for field, label, _color, _count_type in RISK_METRICS if getattr(resident, field)]
 
 
 def dashboard(request):
@@ -113,6 +139,7 @@ def dashboard(request):
     context = {
         "page_title": "Boshqaruv paneli",
         "stats": stats,
+        "risk_cards": risk_metric_cards(residents),
         "recent_houses": houses.order_by("-created_at")[:5],
         "latest_rooms": rooms.order_by("-updated_at")[:6],
         "recent_residents": residents.order_by("-created_at")[:6],
@@ -325,6 +352,22 @@ def house_detail(request, pk):
             "social_count": social_count,
         })
     max_entrance = max(entrance_blocks, key=lambda item: item["serious_count"], default=None)
+    resident_search_items = []
+    for resident in house_residents.select_related("room").order_by("fullname"):
+        risks = resident_risk_labels(resident)
+        resident_search_items.append({
+            "id": resident.pk,
+            "name": resident.fullname,
+            "phone": resident.phone,
+            "living_status": resident.get_living_status_display(),
+            "relationship": resident.get_relationship_display(),
+            "room_number": resident.room.room_number,
+            "entrance_number": resident.room.entrance_number,
+            "risk_count": len(risks),
+            "risks": risks,
+            "modal_url": reverse("registry:apartment_info_modal", args=[resident.room.pk]),
+        })
+
     context = {
         "page_title": f"{house.house_number}-uy",
         "house": house,
@@ -335,16 +378,8 @@ def house_detail(request, pk):
         "serious_attention": house_residents.filter(ATTENTION_Q).distinct().count(),
         "high_risk_attention": house_residents.filter(HIGH_RISK_Q).distinct().count(),
         "medium_risk_attention": house_residents.filter(MEDIUM_RISK_Q).distinct().count(),
-        "previously_convicted_count": house_residents.filter(previously_convicted=True).count(),
-        "penal_institution_count": house_residents.filter(penal_institution=True).count(),
-        "probation_count": house_residents.filter(probation=True).count(),
-        "administrative_supervision_count": house_residents.filter(administrative_supervision=True).count(),
-        "preventive_register_count": house_residents.filter(preventive_register=True).count(),
-        "deo_register_count": house_residents.filter(deo_register=True).count(),
-        "alcohol_addiction_count": house_residents.filter(alcohol_addiction=True).count(),
-        "troubled_family_count": house_residents.filter(troubled_family=True).count(),
-        "drug_addiction_count": house_residents.filter(drug_addiction_register=True).count(),
-        "complaints_count": house_residents.filter(has_complaints=True).count(),
+        "risk_cards": risk_metric_cards(house_residents),
+        "resident_search_items": resident_search_items,
         "social_assistance_count": house_residents.filter(needs_social_assistance=True).count(),
         "max_entrance": max_entrance,
         "entrance_risk_json": json.dumps(entrance_risk_values),
@@ -434,6 +469,7 @@ def stats_api(request):
         line = [0, line[0]]
     return JsonResponse({
         "pie": [occupied, empty],
+        "pie_labels": ["Band", "Bo'sh"],
         "bar": [House.objects.count(), occupied, empty, residents],
         "bar_labels": ["Uy", "Band", "Bo'sh", "A'zo"],
         "line": line,

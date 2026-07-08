@@ -68,11 +68,17 @@
             <label><span class="label">{{ form.apartments_per_entrance.label }}</span>{{ form.apartments_per_entrance }}{% for error in form.apartments_per_entrance.errors %}<span class="field-error">{{ error }}</span>{% endfor %}</label>
             <label class="md:col-span-2"><span class="label">{{ form.color.label }}</span>{{ form.color }}{% for error in form.color.errors %}<span class="field-error">{{ error }}</span>{% endfor %}</label>
             <label><span class="label">{{ form.entrance_camera.label }}</span>{{ form.entrance_camera }}{% for error in form.entrance_camera.errors %}<span class="field-error">{{ error }}</span>{% endfor %}</label>
+            <div class="conditional-fields" data-conditional-for="entrance_camera">
+                <label><span class="label">{{ form.entrance_camera_count.label }}</span>{{ form.entrance_camera_count }}{% for error in form.entrance_camera_count.errors %}<span class="field-error">{{ error }}</span>{% endfor %}</label>
+            </div>
             <label><span class="label">{{ form.yard_camera.label }}</span>{{ form.yard_camera }}{% for error in form.yard_camera.errors %}<span class="field-error">{{ error }}</span>{% endfor %}</label>
             <div class="conditional-fields md:col-span-2" data-conditional-for="yard_camera">
                 <label><span class="label">{{ form.yard_camera_count.label }}</span>{{ form.yard_camera_count }}{% for error in form.yard_camera_count.errors %}<span class="field-error">{{ error }}</span>{% endfor %}</label>
             </div>
-            <label class="md:col-span-2"><span class="label">{{ form.entrance_sos_button.label }}</span>{{ form.entrance_sos_button }}{% for error in form.entrance_sos_button.errors %}<span class="field-error">{{ error }}</span>{% endfor %}</label>
+            <label><span class="label">{{ form.entrance_sos_button.label }}</span>{{ form.entrance_sos_button }}{% for error in form.entrance_sos_button.errors %}<span class="field-error">{{ error }}</span>{% endfor %}</label>
+            <div class="conditional-fields" data-conditional-for="entrance_sos_button">
+                <label><span class="label">{{ form.entrance_sos_button_count.label }}</span>{{ form.entrance_sos_button_count }}{% for error in form.entrance_sos_button_count.errors %}<span class="field-error">{{ error }}</span>{% endfor %}</label>
+            </div>
             <div class="md:col-span-2 flex justify-end">
                 <button class="btn-primary"><i class="bi bi-check2"></i> Saqlash</button>
             </div>

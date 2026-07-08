@@ -9,25 +9,30 @@
             <p class="mt-1 text-[#5C5E62]">{{ house.street_name }}</p>
         </div>
         <div class="house-security-list">
-            <span class="{% if house.entrance_camera %}ok{% endif %}"><i class="bi bi-camera-video"></i> Podyezd kamerasi: {% if house.entrance_camera %}bor{% else %}yo'q{% endif %}</span>
+            <span class="{% if house.entrance_camera %}ok{% endif %}"><i class="bi bi-camera-video"></i> Podyezd kamerasi: {% if house.entrance_camera %}{{ house.entrance_camera_count|default:"bor" }} ta{% else %}yo'q{% endif %}</span>
             <span class="{% if house.yard_camera %}ok{% endif %}"><i class="bi bi-camera"></i> Uy atrofi kamerasi: {% if house.yard_camera %}{{ house.yard_camera_count|default:"bor" }} ta{% else %}yo'q{% endif %}</span>
-            <span class="{% if house.entrance_sos_button %}ok{% endif %}"><i class="bi bi-bell"></i> SOS tugma: {% if house.entrance_sos_button %}bor{% else %}yo'q{% endif %}</span>
+            <span class="{% if house.entrance_sos_button %}ok{% endif %}"><i class="bi bi-bell"></i> SOS tugma: {% if house.entrance_sos_button %}{{ house.entrance_sos_button_count|default:"bor" }} ta{% else %}yo'q{% endif %}</span>
         </div>
     </div>
 </section>
 
-<section class="risk-card-grid mb-5">
-    <div class="risk-card red"><span>Muqaddam sudlanganlar</span><strong>{{ previously_convicted_count }}</strong></div>
-    <div class="risk-card red"><span>Jazoni ijro etish muassasasi bilan bog'liq holatlar</span><strong>{{ penal_institution_count }}</strong></div>
-    <div class="risk-card red"><span>Probatsiya hisobida turuvchilar</span><strong>{{ probation_count }}</strong></div>
-    <div class="risk-card red"><span>Ma'muriy nazoratda turuvchilar</span><strong>{{ administrative_supervision_count }}</strong></div>
-    <div class="risk-card red"><span>Profilaktik hisob ro'yxatida turuvchilar</span><strong>{{ preventive_register_count }}</strong></div>
-    <div class="risk-card red"><span>DEO ro'yxatida turuvchilar</span><strong>{{ deo_register_count }}</strong></div>
-    <div class="risk-card yellow"><span>Spirtli ichimliklarga ruju qo'yganlar</span><strong>{{ alcohol_addiction_count }}</strong></div>
-    <div class="risk-card yellow"><span>Notinch oila sifatida qayd etilgan xonadonlar</span><strong>{{ troubled_family_count }}</strong></div>
-    <div class="risk-card yellow"><span>Giyohvandlik ro'yxatida turuvchilar</span><strong>{{ drug_addiction_count }}</strong></div>
-    <div class="risk-card yellow"><span>Murojaat tushgan xonadonlar</span><strong>{{ complaints_count }}</strong></div>
+{% include "registry/partials/risk_cards.html" with risk_cards=risk_cards extra_class="mb-5" %}
+
+<section class="panel resident-finder mb-5">
+    <div class="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
+        <div>
+            <h2>Xonadondagi shaxsni izlash</h2>
+            <p class="mt-1 text-sm text-[#5C5E62]">F.I.Sh yoki telefon raqamini yozing, tizim qaysi xonadonda yashashini va mavjud xavf belgilarini ko'rsatadi.</p>
+        </div>
+        <label class="resident-search-field">
+            <i class="bi bi-search"></i>
+            <input id="residentSearchInput" type="search" placeholder="Masalan: Aliyev yoki +998..." autocomplete="off">
+        </label>
+    </div>
+    <div id="residentSearchResults" class="resident-search-results"></div>
+    <div id="residentSearchEmpty" class="resident-search-empty">Qidirish uchun kamida 2 ta belgi kiriting.</div>
 </section>
+{{ resident_search_items|json_script:"resident-search-data" }}
 
 <section class="panel mb-5">
     <div class="flex flex-col justify-between gap-4 md:flex-row md:items-center">

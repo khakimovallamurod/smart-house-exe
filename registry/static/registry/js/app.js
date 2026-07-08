@@ -127,7 +127,7 @@ async function drawCharts() {
   const pie = document.getElementById("pieChart");
   if (pie) {
     const data = await fetch("/api/stats/").then((response) => response.json());
-    drawPie(pie, data.pie, ["#047857", "#be123c"]);
+    drawPie(pie, data.pie, data.pie_labels || ["Band", "Bo'sh"], ["#047857", "#be123c"]);
     drawLine(document.getElementById("lineChart"), data.line, "#3E6AE1");
     drawBar(document.getElementById("barChart"), data.bar, data.bar_labels, ["#171A20", "#047857", "#be123c", "#3E6AE1"]);
   }
@@ -138,18 +138,50 @@ async function drawCharts() {
   }
 }
 
-function drawPie(canvas, values, colors) {
+function drawPie(canvas, values, labels, colors) {
   const ctx = canvas.getContext("2d");
+  const width = canvas.width = canvas.offsetWidth;
+  const height = canvas.height = Number(canvas.getAttribute("height")) || 190;
   const total = values.reduce((sum, value) => sum + value, 0) || 1;
+  const centerX = Math.min(width * 0.34, 150);
+  const centerY = height / 2;
+  const radius = Math.min(70, height * 0.36, width * 0.22);
   let start = -Math.PI / 2;
+  ctx.clearRect(0, 0, width, height);
   values.forEach((value, index) => {
     const angle = (value / total) * Math.PI * 2;
     ctx.beginPath();
-    ctx.moveTo(150, 95);
-    ctx.arc(150, 95, 74, start, start + angle);
+    ctx.moveTo(centerX, centerY);
+    ctx.arc(centerX, centerY, radius, start, start + angle);
     ctx.fillStyle = colors[index];
     ctx.fill();
     start += angle;
+  });
+  ctx.beginPath();
+  ctx.arc(centerX, centerY, Math.max(radius * 0.55, 34), 0, Math.PI * 2);
+  ctx.fillStyle = "#fff";
+  ctx.fill();
+  ctx.fillStyle = "#171A20";
+  ctx.font = "600 18px Arial";
+  ctx.textAlign = "center";
+  ctx.fillText(String(total), centerX, centerY - 2);
+  ctx.fillStyle = "#5C5E62";
+  ctx.font = "12px Arial";
+  ctx.fillText("jami", centerX, centerY + 16);
+
+  const legendX = Math.min(width - 150, centerX + radius + 34);
+  values.forEach((value, index) => {
+    const percent = Math.round((value / total) * 100);
+    const y = centerY - 28 + index * 48;
+    ctx.fillStyle = colors[index];
+    ctx.fillRect(legendX, y - 10, 12, 12);
+    ctx.fillStyle = "#171A20";
+    ctx.font = "600 14px Arial";
+    ctx.textAlign = "left";
+    ctx.fillText(`${labels[index] || ""}: ${value} ta`, legendX + 20, y);
+    ctx.fillStyle = "#5C5E62";
+    ctx.font = "12px Arial";
+    ctx.fillText(`${percent}%`, legendX + 20, y + 17);
   });
 }
 
@@ -231,6 +263,81 @@ function drawBar(canvas, values, labels, colors) {
 }
 
 drawCharts();
+initResidentSearch();
+
+function initResidentSearch() {
+  const source = document.getElementById("resident-search-data");
+  const input = document.getElementById("residentSearchInput");
+  const results = document.getElementById("residentSearchResults");
+  const empty = document.getElementById("residentSearchEmpty");
+  if (!source || !input || !results || !empty) return;
+
+  let residents = [];
+  try {
+    residents = JSON.parse(source.textContent || "[]");
+  } catch (_) {
+    residents = [];
+  }
+
+  const render = () => {
+    const term = input.value.trim().toLowerCase();
+    results.innerHTML = "";
+    if (term.length < 2) {
+      empty.textContent = "Qidirish uchun kamida 2 ta belgi kiriting.";
+      empty.classList.remove("hidden");
+      return;
+    }
+    const matches = residents.filter((resident) => {
+      const haystack = `${resident.name || ""} ${resident.phone || ""} ${resident.room_number || ""}`.toLowerCase();
+      return haystack.includes(term);
+    }).slice(0, 8);
+
+    if (!matches.length) {
+      empty.textContent = "Mos shaxs topilmadi.";
+      empty.classList.remove("hidden");
+      return;
+    }
+
+    empty.classList.add("hidden");
+    matches.forEach((resident) => {
+      const card = document.createElement("article");
+      const riskClass = resident.risk_count >= 5 ? "red" : resident.risk_count > 0 ? "yellow" : "green";
+      card.className = `resident-result-card ${riskClass}`;
+      const risks = resident.risks?.length
+        ? resident.risks.map((risk) => `<span>${escapeHtml(risk)}</span>`).join("")
+        : "<span>Xavf belgisi yo'q</span>";
+      card.innerHTML = `
+        <div class="resident-result-main">
+          <div>
+            <strong>${escapeHtml(resident.name || "Nomsiz")}</strong>
+            <p>${escapeHtml(resident.living_status || "")} · ${escapeHtml(resident.relationship || "")}</p>
+          </div>
+          <button class="btn-secondary" type="button" data-modal-url="${resident.modal_url}">
+            <i class="bi bi-door-open"></i> Xonadon
+          </button>
+        </div>
+        <div class="resident-result-meta">
+          <span><i class="bi bi-building"></i> ${resident.entrance_number}-podyezd</span>
+          <span><i class="bi bi-grid-3x3-gap"></i> ${resident.room_number}-xonadon</span>
+          <span><i class="bi bi-telephone"></i> ${escapeHtml(resident.phone || "Telefon kiritilmagan")}</span>
+        </div>
+        <div class="resident-risk-tags">${risks}</div>
+      `;
+      results.appendChild(card);
+    });
+  };
+
+  input.addEventListener("input", render);
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
 
 function syncConditionalFields() {
   document.querySelectorAll("[data-conditional-for]").forEach((section) => {

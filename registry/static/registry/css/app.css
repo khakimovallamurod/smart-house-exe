@@ -53,6 +53,11 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-s
 .house-metrics.compact span { padding:.65rem .55rem; text-align:center; }
 .house-metrics strong, .mini-stat strong { display:block; color:#171A20; font-size:20px; font-weight:500; }
 .mini-stat { min-width:96px; }
+.house-security-card-list { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:.5rem; }
+.house-security-card-list span { display:flex; min-height:74px; flex-direction:column; justify-content:center; gap:.18rem; border:1px solid #fecdd3; border-radius:6px; background:#fff1f2; padding:.55rem; color:#be123c; font-size:11px; line-height:1.2; }
+.house-security-card-list span.ok { border-color:#bbf7d0; background:#ecfdf5; color:#047857; }
+.house-security-card-list i { font-size:16px; }
+.house-security-card-list strong { color:#171A20; font-size:12px; font-weight:600; }
 .house-security-list { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:.5rem; min-width:min(720px,100%); }
 .house-security-list span { display:flex; align-items:center; gap:.45rem; border-radius:6px; background:#fff1f2; color:#be123c; padding:.65rem .75rem; font-size:12px; font-weight:500; }
 .house-security-list span.ok { background:#ecfdf5; color:#047857; }
@@ -64,6 +69,23 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-s
 .risk-card.red strong { color:#be123c; }
 .risk-card.yellow { border-left:5px solid #f59e0b; }
 .risk-card.yellow strong { color:#b45309; }
+.resident-finder { overflow:hidden; }
+.resident-search-field { display:flex; width:min(460px,100%); min-height:46px; align-items:center; gap:.65rem; border:1px solid #dbe1ea; border-radius:8px; background:#fff; padding:0 .85rem; color:#5C5E62; transition:.25s; }
+.resident-search-field:focus-within { border-color:#3E6AE1; box-shadow:0 0 0 3px rgba(62,106,225,.12); }
+.resident-search-field input { width:100%; border:0; outline:0; background:transparent; color:#171A20; font-size:14px; }
+.resident-search-results { margin-top:1rem; display:grid; grid-template-columns:repeat(auto-fill,minmax(290px,1fr)); gap:.75rem; }
+.resident-search-empty { margin-top:1rem; border:1px dashed #cbd5e1; border-radius:8px; background:#f8fafc; padding:.9rem; color:#5C5E62; font-size:14px; }
+.resident-result-card { border:1px solid #e5e7eb; border-left-width:5px; border-radius:10px; background:#fff; padding:.85rem; box-shadow:0 10px 24px rgba(15,23,42,.04); }
+.resident-result-card.green { border-left-color:#059669; }
+.resident-result-card.yellow { border-left-color:#f59e0b; }
+.resident-result-card.red { border-left-color:#e11d48; }
+.resident-result-main { display:flex; align-items:flex-start; justify-content:space-between; gap:.75rem; }
+.resident-result-main strong { display:block; font-size:15px; font-weight:600; line-height:1.2; }
+.resident-result-main p { margin-top:.2rem; color:#5C5E62; font-size:12px; }
+.resident-result-meta { margin-top:.75rem; display:flex; flex-wrap:wrap; gap:.45rem; }
+.resident-result-meta span, .resident-risk-tags span { display:inline-flex; align-items:center; gap:.35rem; border-radius:4px; background:#f8fafc; padding:.35rem .5rem; color:#393C41; font-size:12px; line-height:1.2; }
+.resident-risk-tags { margin-top:.6rem; display:flex; flex-wrap:wrap; gap:.4rem; }
+.resident-risk-tags span { background:#fff7ed; color:#9a3412; }
 .room-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:1rem; }
 .room-card { min-height:178px; text-align:left; border-radius:12px; border:2px solid transparent; padding:1rem; color:#171A20; transition:.33s; }
 .room-card.occupied { background:linear-gradient(180deg,#ecfdf5,#fff); }
@@ -160,6 +182,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-s
   .member-table { min-width:1040px; }
   .house-security-list { grid-template-columns:1fr; min-width:0; }
   .risk-card-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .resident-search-results { grid-template-columns:1fr; }
+  .resident-result-main { flex-direction:column; }
   .entrance-layout { grid-template-columns:repeat(2,minmax(0,1fr)); gap:.5rem; }
   .apartment-card-grid { grid-template-columns:1fr; }
   .form-section { padding:1rem; }
@@ -170,6 +194,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-s
 @media (max-width: 480px) {
   .house-card-grid { grid-template-columns:1fr; }
   .house-metrics.compact { grid-template-columns:1fr; }
+  .house-security-card-list { grid-template-columns:1fr; }
   .risk-card-grid { grid-template-columns:1fr; }
   .entrance-layout { grid-template-columns:1fr; }
   .btn-primary, .btn-secondary, .btn-danger { width:100%; justify-content:center; }

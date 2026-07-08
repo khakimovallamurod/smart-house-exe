@@ -157,19 +157,23 @@
     </section>
 
     <section class="form-section">
-        <div class="form-section-title"><div><h3>9. Qurol va xonadon qo'riqlovi</h3><p>Ov quroli va xonadon qo'riqlov pulti bo'yicha ma'lumotlar.</p></div></div>
+        <div class="form-section-title"><div><h3>9. Qurol ma'lumotlari</h3><p>Ov quroli bo'lsa, soni va markasini kiriting.</p></div></div>
         <label><span class="label">{{ form.hunting_weapon.label }}</span>{{ form.hunting_weapon }}</label>
         <div class="conditional-fields grid gap-4 md:grid-cols-2" data-conditional-for="hunting_weapon">
             <label><span class="label">{{ form.weapon_count.label }}</span>{{ form.weapon_count }}</label>
             <label><span class="label">{{ form.weapon_model.label }}</span>{{ form.weapon_model }}</label>
         </div>
+    </section>
+
+    <section class="form-section">
+        <div class="form-section-title"><div><h3>10. Xonadon qo'riqlov pulti</h3><p>Xonadonga qo'riqlov pulti o'rnatilgan yoki ulanmaganini belgilang.</p></div></div>
         <div class="mt-4">
             <label><span class="label">{{ form.security_panel_connected.label }}</span>{{ form.security_panel_connected }}</label>
         </div>
     </section>
 
     <section class="form-section">
-        <div class="form-section-title"><div><h3>10. Murojaatlar</h3><p>Murojaat tushgan bo'lsa sonini kiriting, har biri uchun izoh maydoni ochiladi.</p></div></div>
+        <div class="form-section-title"><div><h3>11. Murojaatlar</h3><p>Murojaat tushgan bo'lsa sonini kiriting, har biri uchun izoh maydoni ochiladi.</p></div></div>
         <label><span class="label">{{ form.has_complaints.label }}</span>{{ form.has_complaints }}</label>
         <div class="conditional-fields" data-conditional-for="has_complaints">
             <div class="grid gap-3 md:grid-cols-[1fr_auto] md:items-end">
@@ -181,9 +185,10 @@
     </section>
 
     <section class="form-section">
-        <div class="form-section-title"><div><h3>11. Ijtimoiy va qo'shma xulosa</h3><p>Ijtimoiy yoki qo'shma xulosa berilgan bo'lsa, fayl va izohini kiriting.</p></div></div>
+        <div class="form-section-title"><div><h3>12. Ijtimoiy va qo'shma xulosa</h3><p>Ijtimoiy yoki qo'shma xulosa berilgan bo'lsa, kim tomonidan berilganini, fayl va izohini kiriting.</p></div></div>
         <label><span class="label">{{ form.social_conclusion.label }}</span>{{ form.social_conclusion }}</label>
         <div class="conditional-fields grid gap-4 md:grid-cols-2" data-conditional-for="social_conclusion">
+            <label><span class="label">{{ form.social_conclusion_provider.label }}</span>{{ form.social_conclusion_provider }}</label>
             <label><span class="label">{{ form.social_conclusion_file.label }}</span>{{ form.social_conclusion_file }}</label>
             <label class="md:col-span-2"><span class="label">{{ form.social_conclusion_note.label }}</span>{{ form.social_conclusion_note }}</label>
         </div>
@@ -197,7 +202,7 @@
     </section>
 
     <section class="form-section">
-        <div class="form-section-title"><div><h3>12. Qo'shimcha izoh</h3></div></div>
+        <div class="form-section-title"><div><h3>13. Qo'shimcha izoh</h3></div></div>
         <label><span class="label">{{ form.notes.label }}</span>{{ form.notes }}</label>
     </section>
 

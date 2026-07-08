@@ -18,9 +18,11 @@ class House(models.Model):
     apartments_per_entrance = models.PositiveIntegerField(default=10)
     color = models.CharField(max_length=20, choices=COLOR_CHOICES, default="blue")
     entrance_camera = models.BooleanField(default=False)
+    entrance_camera_count = models.PositiveIntegerField(blank=True, null=True)
     yard_camera = models.BooleanField(default=False)
     yard_camera_count = models.PositiveIntegerField(blank=True, null=True)
     entrance_sos_button = models.BooleanField(default=False)
+    entrance_sos_button_count = models.PositiveIntegerField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -162,6 +164,14 @@ class Resident(models.Model):
         ("other", "Boshqa"),
     ]
     GENDER_CHOICES = [("male", "Erkak"), ("female", "Ayol"), ("other", "Boshqa")]
+    SOCIAL_CONCLUSION_PROVIDER_CHOICES = [
+        ("mayor_assistant", "Hokim yordamchisi"),
+        ("women_activist", "Xotin-qizlar faoli"),
+        ("prevention_inspector", "Profilaktika inspektori"),
+        ("youth_leader", "Yoshlar yetakchisi"),
+        ("social_protection", "Ijtimoiy himoya vakili"),
+        ("tax_inspector", "Soliq inspektori"),
+    ]
 
     room = models.ForeignKey(Room, related_name="residents", on_delete=models.CASCADE)
     photo = models.FileField(upload_to="residents/", blank=True, null=True)
@@ -240,6 +250,11 @@ class Resident(models.Model):
     complaint_count = models.PositiveIntegerField(blank=True, null=True)
     complaint_notes = models.JSONField(default=list, blank=True)
     social_conclusion = models.BooleanField(default=False)
+    social_conclusion_provider = models.CharField(
+        max_length=40,
+        choices=SOCIAL_CONCLUSION_PROVIDER_CHOICES,
+        blank=True,
+    )
     social_conclusion_file = models.FileField(upload_to="resident_documents/", blank=True, null=True)
     social_conclusion_note = models.TextField(blank=True)
     joint_conclusion = models.BooleanField(default=False)

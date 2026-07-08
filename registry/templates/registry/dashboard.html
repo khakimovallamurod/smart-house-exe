@@ -11,6 +11,8 @@
     <div class="stat-card danger"><i class="bi bi-exclamation-circle"></i><span>Bo'sh xonadonlar</span><strong>{{ stats.empty_rooms }}</strong></div>
 </section>
 
+{% include "registry/partials/risk_cards.html" with risk_cards=risk_cards extra_class="mt-6" %}
+
 <section class="mt-6 grid gap-5 xl:grid-cols-3">
     <div class="panel"><h2>Band va bo'sh xonadonlar</h2><canvas id="pieChart" height="190"></canvas></div>
     <div class="panel"><h2>Uylar bo'yicha xonadonlar</h2><canvas id="lineChart" height="190"></canvas></div>

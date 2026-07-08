@@ -33,7 +33,9 @@ class HouseForm(StyledModelForm):
         "street_name": "Masalan: Yangi hayot",
         "entrance_count": "Masalan: 4",
         "apartments_per_entrance": "Masalan: 10",
+        "entrance_camera_count": "Masalan: 4",
         "yard_camera_count": "Masalan: 4",
+        "entrance_sos_button_count": "Masalan: 4",
     }
 
     class Meta:
@@ -45,9 +47,11 @@ class HouseForm(StyledModelForm):
             "apartments_per_entrance",
             "color",
             "entrance_camera",
+            "entrance_camera_count",
             "yard_camera",
             "yard_camera_count",
             "entrance_sos_button",
+            "entrance_sos_button_count",
         ]
         labels = {
             "street_name": "Mahalla nomi",
@@ -56,23 +60,31 @@ class HouseForm(StyledModelForm):
             "apartments_per_entrance": "1 ta podyezddagi xonadon soni",
             "color": "Uy rangi",
             "entrance_camera": "Podyezd eshigi oldiga kamera qo'yilganmi?",
+            "entrance_camera_count": "Podyezd eshigi oldidagi kameralar soni",
             "yard_camera": "Uy atrofi kameralashtirilganmi?",
             "yard_camera_count": "Uy atrofidagi kameralar soni",
             "entrance_sos_button": "Podyezdga SOS tugma qo'yilganmi?",
+            "entrance_sos_button_count": "Podyezddagi SOS tugmalar soni",
         }
         widgets = {
             "entrance_count": forms.NumberInput(attrs={"min": 1}),
             "apartments_per_entrance": forms.NumberInput(attrs={"min": 1}),
             "entrance_camera": forms.RadioSelect(choices=BOOLEAN_CHOICES),
+            "entrance_camera_count": forms.NumberInput(attrs={"min": 1}),
             "yard_camera": forms.RadioSelect(choices=BOOLEAN_CHOICES),
             "yard_camera_count": forms.NumberInput(attrs={"min": 1}),
             "entrance_sos_button": forms.RadioSelect(choices=BOOLEAN_CHOICES),
+            "entrance_sos_button_count": forms.NumberInput(attrs={"min": 1}),
         }
 
     def clean(self):
         cleaned = super().clean()
+        if not cleaned.get("entrance_camera"):
+            cleaned["entrance_camera_count"] = None
         if not cleaned.get("yard_camera"):
             cleaned["yard_camera_count"] = None
+        if not cleaned.get("entrance_sos_button"):
+            cleaned["entrance_sos_button_count"] = None
         return cleaned
 
     def clean_entrance_count(self):
@@ -178,6 +190,7 @@ class ResidentOwnerForm(StyledModelForm):
         "drug_addiction_since": "Masalan: 2021-yildan beri",
         "social_assistance_note": "Qanday yordamga muhtojligini yozing",
         "complaint_count": "Murojaatlar soni",
+        "social_conclusion_provider": "Xulosa kim tomonidan berilgan?",
         "social_conclusion_note": "Ijtimoiy xulosa izohi",
         "joint_conclusion_note": "Qo'shma xulosa izohi",
         "notes": "Qo'shimcha izoh",
@@ -255,6 +268,7 @@ class ResidentOwnerForm(StyledModelForm):
             "has_complaints",
             "complaint_count",
             "social_conclusion",
+            "social_conclusion_provider",
             "social_conclusion_file",
             "social_conclusion_note",
             "joint_conclusion",
@@ -328,10 +342,11 @@ class ResidentOwnerForm(StyledModelForm):
             "drug_addiction_since": "Qachondan beri",
             "needs_social_assistance": "Ushbu xonadon ijtimoiy yordamga muhtojmi?",
             "social_assistance_note": "Izoh",
-            "security_panel_connected": "Xonadon qo'riqlov pultiga ulanganmi?",
+            "security_panel_connected": "Xonadonga qo'riqlov pulti o'rnatilganmi?",
             "has_complaints": "Mazkur xonadondan murojaat tushganmi?",
             "complaint_count": "Murojaatlar soni",
             "social_conclusion": "Ijtimoiy xulosa berilganmi?",
+            "social_conclusion_provider": "Ijtimoiy xulosa kim tomonidan berilgan?",
             "social_conclusion_file": "Ijtimoiy xulosa fayli",
             "social_conclusion_note": "Izoh",
             "joint_conclusion": "Qo'shma xulosa berilganmi?",
@@ -444,6 +459,7 @@ class ResidentOwnerForm(StyledModelForm):
         if not cleaned.get("has_complaints"):
             cleaned["complaint_count"] = None
         if not cleaned.get("social_conclusion"):
+            cleaned["social_conclusion_provider"] = ""
             cleaned["social_conclusion_file"] = None
             cleaned["social_conclusion_note"] = ""
         if not cleaned.get("joint_conclusion"):

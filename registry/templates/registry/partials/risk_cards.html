@@ -1,0 +1,8 @@
+<section class="risk-card-grid {{ extra_class|default:'' }}">
+    {% for card in risk_cards %}
+    <div class="risk-card {{ card.color }}">
+        <span>{{ card.label }}</span>
+        <strong>{{ card.count }}</strong>
+    </div>
+    {% endfor %}
+</section>

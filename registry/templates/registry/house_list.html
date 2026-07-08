@@ -10,10 +10,22 @@
             </div>
             <span class="house-icon"><i class="bi bi-house-door"></i></span>
         </div>
-        <div class="house-metrics compact">
-            <span class="danger"><strong>{{ house.serious_attention }}</strong> og'ir nazorat</span>
-            <span class="danger"><strong>{{ house.penal_institution_count }}</strong> JIEM</span>
-            <span class="good"><strong>{{ house.social_assistance_count }}</strong> ijtimoiy yordam</span>
+        <div class="house-security-card-list">
+            <span class="{% if house.yard_camera %}ok{% endif %}">
+                <i class="bi bi-camera-video"></i>
+                <strong>Uy atrofi</strong>
+                {% if house.yard_camera %}{{ house.yard_camera_count|default:"bor" }} ta kamera{% else %}kamera yo'q{% endif %}
+            </span>
+            <span class="{% if house.entrance_camera %}ok{% endif %}">
+                <i class="bi bi-door-closed"></i>
+                <strong>Podyezd</strong>
+                {% if house.entrance_camera %}{{ house.entrance_camera_count|default:"bor" }} ta kamera{% else %}kamera yo'q{% endif %}
+            </span>
+            <span class="{% if house.entrance_sos_button %}ok{% endif %}">
+                <i class="bi bi-bell"></i>
+                <strong>SOS</strong>
+                {% if house.entrance_sos_button %}{{ house.entrance_sos_button_count|default:"bor" }} ta tugma{% else %}tugma yo'q{% endif %}
+            </span>
         </div>
         <div class="mt-auto flex items-center justify-between gap-3">
             <p class="text-xs text-[#5C5E62]">{{ house.created_at|date:"d.m.Y" }}</p>
