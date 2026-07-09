@@ -7,6 +7,42 @@
     <div class="stat-card danger"><i class="bi bi-exclamation-circle"></i><span>Bo'sh xonadonlar</span><strong>{{ stats.empty_rooms }}</strong></div>
 </section>
 
+<section class="room-risk-card-grid mt-6">
+    {% for key, group in room_risk_groups.items %}
+    <button class="room-risk-card {{ group.color }}" type="button" data-room-risk-card="{{ key }}">
+        <span>{{ group.label }}</span>
+        <strong>{{ group.rooms|length }}</strong>
+    </button>
+    {% endfor %}
+</section>
+
+<section class="room-risk-panels mt-3">
+    {% for key, group in room_risk_groups.items %}
+    <div class="room-risk-panel hidden" data-room-risk-panel="{{ key }}">
+        <div class="risk-people-head">
+            <div>
+                <h3>{{ group.label }}</h3>
+                <p>{{ group.rooms|length }} ta xonadon topildi.</p>
+            </div>
+            <button class="icon-btn" type="button" data-room-risk-panel-close aria-label="Yopish"><i class="bi bi-x-lg"></i></button>
+        </div>
+        <div class="room-risk-list">
+            {% for item in group.rooms %}
+            <article class="room-risk-row {{ group.color }}">
+                <div>
+                    <strong>{{ item.house_number }}-uy · {{ item.room_number }}-xonadon</strong>
+                    <p>{{ item.street_name }} · {{ item.entrance_number }}-podyezd · {{ item.resident_count }} nafar · {{ item.risk_factor_count }} ta ko'rsatkich</p>
+                </div>
+                <button class="btn-secondary" type="button" data-modal-url="{{ item.modal_url }}"><i class="bi bi-door-open"></i> Xonadon</button>
+            </article>
+            {% empty %}
+            <p class="empty">Ushbu tur bo'yicha xonadon topilmadi.</p>
+            {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
+</section>
+
 {% include "registry/partials/risk_cards.html" with risk_cards=risk_cards risk_people_groups=risk_people_groups extra_class="mt-6" %}
 
 <section class="mt-6 grid gap-5 xl:grid-cols-3">

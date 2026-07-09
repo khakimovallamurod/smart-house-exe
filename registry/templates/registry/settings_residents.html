@@ -25,7 +25,7 @@
                     <th>Tug'ilgan sana</th>
                     <th>Jinsi</th>
                     <th>Telefon raqami</th>
-                    <th>Pasport seriyasi</th>
+                    <th>Pasport JSHSHIR</th>
                     <th>Nazorat</th>
                     <th class="text-center">Amallar</th>
                 </tr>
@@ -40,7 +40,7 @@
                     <td>{{ resident.birth_date|date:"d.m.Y"|default:"-" }}</td>
                     <td>{{ resident.get_gender_display|default:"-" }}</td>
                     <td>{{ resident.phone|default:"-" }}</td>
-                    <td>{{ resident.passport|default:"-" }}</td>
+                    <td>{{ resident.pinfl|default:"-" }}</td>
                     <td>
                         {% if resident.supervision_count %}
                             <span class="table-badge danger">{{ resident.supervision_count }} ta belgi</span>

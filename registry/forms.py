@@ -152,7 +152,7 @@ class ResidentOwnerForm(StyledModelForm):
     placeholders = {
         "fullname": "Masalan: Ali Valiyev",
         "phone": "+998 90 123 45 67",
-        "passport": "Masalan: AB 1234567",
+        "pinfl": "14 xonali JSHSHIRni kiriting",
         "occupation": "Masalan: haydovchi",
         "workplace": "Masalan: Samarqand shahar IIB",
         "education": "Masalan: Samarqand davlat universiteti",
@@ -189,7 +189,7 @@ class ResidentOwnerForm(StyledModelForm):
         "weapon_model": "Masalan: IJ-27",
         "drug_addiction_since": "Masalan: 2021-yildan beri",
         "social_assistance_note": "Qanday yordamga muhtojligini yozing",
-        "origin_neighborhood_conclusion_note": "Xulosa mazmuni yoki izohini yozing",
+        "origin_neighborhood_conclusion_note": "Fuqaro to'g'risidagi ma'lumotni yozing",
         "complaint_count": "Murojaatlar soni",
         "social_conclusion_provider": "Xulosa kim tomonidan berilgan?",
         "social_conclusion_note": "Ijtimoiy xulosa izohi",
@@ -214,7 +214,7 @@ class ResidentOwnerForm(StyledModelForm):
             "birth_date",
             "gender",
             "phone",
-            "passport",
+            "pinfl",
             "is_working",
             "occupation",
             "workplace",
@@ -288,15 +288,15 @@ class ResidentOwnerForm(StyledModelForm):
             "has_temporary_registration": "Vaqtinchalik propiska bormi?",
             "temporary_registration_file": "Vaqtinchalik propiska fayli",
             "daily_rental_guest_home": "Ushbu xonadon kunlik ijaraga beriladigan mehmon xonadonmi?",
-            "has_origin_neighborhood_conclusion": "Doimiy yashash joyidagi mahalla va profilaktika inspektoridan xulosa olinganmi?",
-            "origin_neighborhood_conclusion_note": "Xulosa bo'yicha izoh",
+            "has_origin_neighborhood_conclusion": "Doimiy yashash joydagi mahalla proflaktika inspektoridan fuqaro to'g'risidagi ma'lumot",
+            "origin_neighborhood_conclusion_note": "Doimiy yashash joydagi mahalla proflaktika inspektoridan fuqaro to'g'risidagi ma'lumot",
             "relationship": "Qarindoshlik",
             "photo": "Rasm",
             "fullname": "F.I.Sh",
             "birth_date": "Tug'ilgan sana",
             "gender": "Jinsi",
             "phone": "Telefon raqami",
-            "passport": "Pasport seriyasi",
+            "pinfl": "Pasport JSHSHIR",
             "is_working": "Ushbu shaxs ishlaydimi?",
             "occupation": "Kasbi",
             "workplace": "Qayerda ishlaydi?",
@@ -368,7 +368,8 @@ class ResidentOwnerForm(StyledModelForm):
             "has_rental_contract": forms.RadioSelect(choices=BOOLEAN_CHOICES),
             "has_temporary_registration": forms.RadioSelect(choices=BOOLEAN_CHOICES),
             "daily_rental_guest_home": forms.RadioSelect(choices=BOOLEAN_CHOICES),
-            "has_origin_neighborhood_conclusion": forms.RadioSelect(choices=BOOLEAN_CHOICES),
+            "has_origin_neighborhood_conclusion": forms.HiddenInput(),
+            "pinfl": forms.TextInput(attrs={"maxlength": 14, "pattern": r"\d{14}", "inputmode": "numeric"}),
             "birth_date": forms.DateInput(attrs={"type": "date"}),
             "is_working": forms.RadioSelect(choices=BOOLEAN_CHOICES),
             "is_studying": forms.RadioSelect(choices=BOOLEAN_CHOICES),
@@ -421,8 +422,7 @@ class ResidentOwnerForm(StyledModelForm):
             cleaned["rental_contract_file"] = None
         if not cleaned.get("has_temporary_registration"):
             cleaned["temporary_registration_file"] = None
-        if not cleaned.get("has_origin_neighborhood_conclusion"):
-            cleaned["origin_neighborhood_conclusion_note"] = ""
+        cleaned["has_origin_neighborhood_conclusion"] = bool(cleaned.get("origin_neighborhood_conclusion_note", "").strip())
         if not cleaned.get("is_working"):
             cleaned["occupation"] = ""
             cleaned["workplace"] = ""
@@ -484,3 +484,9 @@ class ResidentOwnerForm(StyledModelForm):
             cleaned["joint_conclusion_file"] = None
             cleaned["joint_conclusion_note"] = ""
         return cleaned
+
+    def clean_pinfl(self):
+        pinfl = self.cleaned_data.get("pinfl", "").strip()
+        if pinfl and (not pinfl.isdigit() or len(pinfl) != 14):
+            raise forms.ValidationError("JSHSHIR 14 ta raqamdan iborat bo'lishi kerak.")
+        return pinfl

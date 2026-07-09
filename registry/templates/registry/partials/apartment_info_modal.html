@@ -40,7 +40,7 @@
                         <div><span>Tug'ilgan sana</span><strong>{{ resident.birth_date|date:"d.m.Y"|default:"-" }}</strong></div>
                         <div><span>Jinsi</span><strong>{{ resident.get_gender_display|default:"-" }}</strong></div>
                         <div><span>Qarindoshlik</span><strong>{{ resident.get_relationship_display|default:"-" }}</strong></div>
-                        <div><span>Pasport seriyasi</span><strong>{{ resident.passport|default:"-" }}</strong></div>
+                        <div><span>Pasport JSHSHIR</span><strong>{{ resident.pinfl|default:"-" }}</strong></div>
                         <div><span>Ish faoliyati</span><strong>{% if resident.is_working %}{{ resident.workplace|default:resident.occupation|default:"Ishlaydi" }}{% else %}-{% endif %}</strong></div>
                         <div><span>O'qish faoliyati</span><strong>{% if resident.is_studying %}{{ resident.education|default:"O'qiydi" }}{% else %}-{% endif %}</strong></div>
                     </div>

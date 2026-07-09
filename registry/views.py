@@ -158,23 +158,26 @@ def risk_people_groups(residents):
 
 def room_risk_summary_groups(rooms):
     groups = {
-        "red": {"label": "Yuqori xavfli xonadonlar", "color": "red", "rooms": []},
-        "yellow": {"label": "E'tibor talab qiladigan xonadonlar", "color": "yellow", "rooms": []},
-        "green": {"label": "Barqaror xonadonlar", "color": "green", "rooms": []},
+        "red": {"label": "Qizil xonadonlar", "color": "red", "rooms": []},
+        "yellow": {"label": "Sariq xonadonlar", "color": "yellow", "rooms": []},
+        "green": {"label": "Yashil xonadonlar", "color": "green", "rooms": []},
     }
     for room in rooms:
         if not room.resident_count:
             continue
+        risk_factor_count = getattr(room, "risk_factor_count", room_risk_factor_count(room))
         item = {
             "room_number": room.room_number,
             "entrance_number": room.entrance_number,
+            "house_number": room.house.house_number,
+            "street_name": room.house.street_name,
             "resident_count": room.resident_count,
-            "risk_factor_count": room.risk_factor_count,
+            "risk_factor_count": risk_factor_count,
             "modal_url": reverse("registry:apartment_info_modal", args=[room.pk]),
         }
-        if room.risk_factor_count >= 4:
+        if risk_factor_count >= 4:
             groups["red"]["rooms"].append(item)
-        elif room.risk_factor_count > 0:
+        elif risk_factor_count > 0:
             groups["yellow"]["rooms"].append(item)
         else:
             groups["green"]["rooms"].append(item)
@@ -183,7 +186,9 @@ def room_risk_summary_groups(rooms):
 
 def dashboard(request):
     houses = House.objects.all()
-    rooms = Room.objects.select_related("house")
+    rooms = Room.objects.select_related("house").annotate(
+        resident_count=Count("residents", distinct=True),
+    ).prefetch_related("residents")
     residents = Resident.objects.select_related("room", "room__house")
     occupied_rooms = rooms.filter(residents__isnull=False).distinct()
 
@@ -207,6 +212,7 @@ def dashboard(request):
         "stats": stats,
         "risk_cards": risk_metric_cards(residents),
         "risk_people_groups": risk_people_groups(residents),
+        "room_risk_groups": room_risk_summary_groups(rooms),
         "recent_houses": houses.order_by("-created_at")[:5],
         "latest_rooms": rooms.order_by("-updated_at")[:6],
         "recent_residents": residents.order_by("-created_at")[:6],
