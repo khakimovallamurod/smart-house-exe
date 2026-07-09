@@ -123,6 +123,8 @@ def resident_card_payload(resident):
         "phone": resident.phone,
         "living_status": resident.get_living_status_display(),
         "relationship": resident.get_relationship_display(),
+        "house_number": resident.room.house.house_number,
+        "street_name": resident.room.house.street_name,
         "room_number": resident.room.room_number,
         "entrance_number": resident.room.entrance_number,
         "risk_count": len(risks),
@@ -134,7 +136,8 @@ def resident_card_payload(resident):
 def risk_people_groups(residents):
     groups = {}
     for field, label, color, _count_type in RISK_METRICS:
-        people = residents.filter(**{field: True}).select_related("room").order_by(
+        people = residents.filter(**{field: True}).select_related("room", "room__house").order_by(
+            "room__house__house_number",
             "room__entrance_number",
             "room__room_number",
             "fullname",
@@ -172,6 +175,7 @@ def dashboard(request):
         "page_title": "Boshqaruv paneli",
         "stats": stats,
         "risk_cards": risk_metric_cards(residents),
+        "risk_people_groups": risk_people_groups(residents),
         "recent_houses": houses.order_by("-created_at")[:5],
         "latest_rooms": rooms.order_by("-updated_at")[:6],
         "recent_residents": residents.order_by("-created_at")[:6],
