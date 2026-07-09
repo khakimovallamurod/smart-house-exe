@@ -46,6 +46,11 @@
             <div class="conditional-fields" data-conditional-for="has_temporary_registration">
                 <label><span class="label">{{ form.temporary_registration_file.label }}</span>{{ form.temporary_registration_file }}</label>
             </div>
+            <label><span class="label">{{ form.daily_rental_guest_home.label }}</span>{{ form.daily_rental_guest_home }}</label>
+            <label><span class="label">{{ form.has_origin_neighborhood_conclusion.label }}</span>{{ form.has_origin_neighborhood_conclusion }}</label>
+            <div class="conditional-fields md:col-span-2" data-conditional-for="has_origin_neighborhood_conclusion">
+                <label><span class="label">{{ form.origin_neighborhood_conclusion_note.label }}</span>{{ form.origin_neighborhood_conclusion_note }}</label>
+            </div>
         </div>
     </section>
 

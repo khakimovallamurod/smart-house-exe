@@ -150,6 +150,31 @@ def risk_people_groups(residents):
     return groups
 
 
+def room_risk_summary_groups(rooms):
+    groups = {
+        "red": {"label": "Yuqori xavfli xonadonlar", "color": "red", "rooms": []},
+        "yellow": {"label": "E'tibor talab qiladigan xonadonlar", "color": "yellow", "rooms": []},
+        "green": {"label": "Barqaror xonadonlar", "color": "green", "rooms": []},
+    }
+    for room in rooms:
+        if not room.resident_count:
+            continue
+        item = {
+            "room_number": room.room_number,
+            "entrance_number": room.entrance_number,
+            "resident_count": room.resident_count,
+            "risk_factor_count": room.risk_factor_count,
+            "modal_url": reverse("registry:apartment_info_modal", args=[room.pk]),
+        }
+        if room.risk_factor_count >= 4:
+            groups["red"]["rooms"].append(item)
+        elif room.risk_factor_count > 0:
+            groups["yellow"]["rooms"].append(item)
+        else:
+            groups["green"]["rooms"].append(item)
+    return groups
+
+
 def dashboard(request):
     houses = House.objects.all()
     rooms = Room.objects.select_related("house")
@@ -362,10 +387,12 @@ def house_detail(request, pk):
     house_residents = Resident.objects.filter(room__house=house)
     entrance_blocks = []
     entrance_risk_values = []
+    all_house_rooms = []
     for entrance_number in range(1, house.entrance_count + 1):
         entrance_rooms = list(rooms.filter(entrance_number=entrance_number))
         for room in entrance_rooms:
             room.risk_factor_count = room_risk_factor_count(room)
+        all_house_rooms.extend(entrance_rooms)
         red_rooms = sum(1 for room in entrance_rooms if room.risk_factor_count >= 4)
         yellow_rooms = sum(1 for room in entrance_rooms if 0 < room.risk_factor_count < 4)
         green_rooms = sum(1 for room in entrance_rooms if room.resident_count and room.risk_factor_count == 0)
@@ -404,6 +431,7 @@ def house_detail(request, pk):
         "medium_risk_attention": house_residents.filter(MEDIUM_RISK_Q).distinct().count(),
         "risk_cards": risk_metric_cards(house_residents),
         "risk_people_groups": risk_people_groups(house_residents),
+        "room_risk_groups": room_risk_summary_groups(all_house_rooms),
         "resident_search_items": resident_search_items,
         "social_assistance_count": house_residents.filter(needs_social_assistance=True).count(),
         "max_entrance": max_entrance,

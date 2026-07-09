@@ -76,6 +76,21 @@ document.addEventListener("click", async (event) => {
     event.target.closest("[data-risk-panel]")?.classList.add("hidden");
     return;
   }
+  const roomRiskCard = event.target.closest("[data-room-risk-card]");
+  if (roomRiskCard) {
+    const target = roomRiskCard.dataset.roomRiskCard;
+    document.querySelectorAll("[data-room-risk-card]").forEach((card) => card.classList.toggle("active", card === roomRiskCard));
+    document.querySelectorAll("[data-room-risk-panel]").forEach((panel) => {
+      panel.classList.toggle("hidden", panel.dataset.roomRiskPanel !== target);
+    });
+    document.querySelector(`[data-room-risk-panel="${target}"]`)?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    return;
+  }
+  if (event.target.closest("[data-room-risk-panel-close]")) {
+    document.querySelectorAll("[data-room-risk-card]").forEach((card) => card.classList.remove("active"));
+    event.target.closest("[data-room-risk-panel]")?.classList.add("hidden");
+    return;
+  }
   const renderComplaintsButton = event.target.closest("[data-render-complaints]");
   if (renderComplaintsButton) {
     renderComplaintNotes();

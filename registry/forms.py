@@ -189,6 +189,7 @@ class ResidentOwnerForm(StyledModelForm):
         "weapon_model": "Masalan: IJ-27",
         "drug_addiction_since": "Masalan: 2021-yildan beri",
         "social_assistance_note": "Qanday yordamga muhtojligini yozing",
+        "origin_neighborhood_conclusion_note": "Xulosa mazmuni yoki izohini yozing",
         "complaint_count": "Murojaatlar soni",
         "social_conclusion_provider": "Xulosa kim tomonidan berilgan?",
         "social_conclusion_note": "Ijtimoiy xulosa izohi",
@@ -204,6 +205,9 @@ class ResidentOwnerForm(StyledModelForm):
             "rental_contract_file",
             "has_temporary_registration",
             "temporary_registration_file",
+            "daily_rental_guest_home",
+            "has_origin_neighborhood_conclusion",
+            "origin_neighborhood_conclusion_note",
             "relationship",
             "photo",
             "fullname",
@@ -282,6 +286,9 @@ class ResidentOwnerForm(StyledModelForm):
             "rental_contract_file": "Ijara shartnomasi fayli",
             "has_temporary_registration": "Vaqtinchalik propiska bormi?",
             "temporary_registration_file": "Vaqtinchalik propiska fayli",
+            "daily_rental_guest_home": "Ushbu xonadon kunlik ijaraga beriladigan mehmon xonadonmi?",
+            "has_origin_neighborhood_conclusion": "Doimiy yashash joyidagi mahalla va profilaktika inspektoridan xulosa olinganmi?",
+            "origin_neighborhood_conclusion_note": "Xulosa bo'yicha izoh",
             "relationship": "Qarindoshlik",
             "photo": "Rasm",
             "fullname": "F.I.Sh",
@@ -358,6 +365,8 @@ class ResidentOwnerForm(StyledModelForm):
             "living_status": forms.RadioSelect,
             "has_rental_contract": forms.RadioSelect(choices=BOOLEAN_CHOICES),
             "has_temporary_registration": forms.RadioSelect(choices=BOOLEAN_CHOICES),
+            "daily_rental_guest_home": forms.RadioSelect(choices=BOOLEAN_CHOICES),
+            "has_origin_neighborhood_conclusion": forms.RadioSelect(choices=BOOLEAN_CHOICES),
             "birth_date": forms.DateInput(attrs={"type": "date"}),
             "is_working": forms.RadioSelect(choices=BOOLEAN_CHOICES),
             "is_studying": forms.RadioSelect(choices=BOOLEAN_CHOICES),
@@ -391,6 +400,7 @@ class ResidentOwnerForm(StyledModelForm):
             "social_assistance_note": forms.Textarea(attrs={"rows": 3}),
             "social_conclusion_note": forms.Textarea(attrs={"rows": 3}),
             "joint_conclusion_note": forms.Textarea(attrs={"rows": 3}),
+            "origin_neighborhood_conclusion_note": forms.Textarea(attrs={"rows": 3}),
             "notes": forms.Textarea(attrs={"rows": 3}),
         }
 
@@ -401,10 +411,15 @@ class ResidentOwnerForm(StyledModelForm):
             cleaned["rental_contract_file"] = None
             cleaned["has_temporary_registration"] = False
             cleaned["temporary_registration_file"] = None
+            cleaned["daily_rental_guest_home"] = False
+            cleaned["has_origin_neighborhood_conclusion"] = False
+            cleaned["origin_neighborhood_conclusion_note"] = ""
         if not cleaned.get("has_rental_contract"):
             cleaned["rental_contract_file"] = None
         if not cleaned.get("has_temporary_registration"):
             cleaned["temporary_registration_file"] = None
+        if not cleaned.get("has_origin_neighborhood_conclusion"):
+            cleaned["origin_neighborhood_conclusion_note"] = ""
         if not cleaned.get("is_working"):
             cleaned["occupation"] = ""
             cleaned["workplace"] = ""
