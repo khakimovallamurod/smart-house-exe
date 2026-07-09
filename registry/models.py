@@ -249,6 +249,7 @@ class Resident(models.Model):
     needs_social_assistance = models.BooleanField(default=False)
     social_assistance_note = models.TextField(blank=True)
     security_panel_connected = models.BooleanField(default=False)
+    cybersecurity_bot_connected = models.BooleanField(default=False)
     has_complaints = models.BooleanField(default=False)
     complaint_count = models.PositiveIntegerField(blank=True, null=True)
     complaint_notes = models.JSONField(default=list, blank=True)

@@ -88,6 +88,9 @@
                         {% if resident.security_panel_connected %}
                         <div class="positive-card"><h4>Xonadon qo'riqlov pultiga ulangan</h4></div>
                         {% endif %}
+                        {% if resident.cybersecurity_bot_connected %}
+                        <div class="positive-card"><h4>Kiberxavfsizlik botiga ulangan</h4></div>
+                        {% endif %}
                         {% if resident.has_complaints %}
                         <div class="positive-card"><h4>Xonadondan murojaat tushgan</h4><p>{{ resident.complaint_count }} ta</p>{% for note in resident.complaint_notes %}<small>{{ forloop.counter }}. {{ note }}</small>{% endfor %}</div>
                         {% endif %}
@@ -103,7 +106,7 @@
         <div class="p-6 text-center">
             <div class="mx-auto mb-3 grid h-12 w-12 place-items-center rounded bg-rose-50 text-rose-600"><i class="bi bi-house-x"></i></div>
             <h3 class="text-lg font-medium">Bu xonadonda ma'lumot yo'q</h3>
-            <p class="mt-1 text-sm text-[#5C5E62]">A'zo ma'lumotlari sozlash bo'limidan kiritiladi.</p>
+            <p class="mt-1 text-sm text-[#5C5E62]">Fuqaro ma'lumotlari sozlash bo'limidan kiritiladi.</p>
         </div>
         {% endif %}
     </div>

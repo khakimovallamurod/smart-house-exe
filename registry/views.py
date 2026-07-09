@@ -25,6 +25,7 @@ MEDIUM_RISK_Q = (
     | Q(troubled_family=True)
     | Q(drug_addiction_register=True)
     | Q(has_complaints=True)
+    | Q(cybersecurity_bot_connected=True)
 )
 ATTENTION_Q = HIGH_RISK_Q | MEDIUM_RISK_Q
 SERIOUS_CRIME_Q = ATTENTION_Q
@@ -41,6 +42,7 @@ MEDIUM_RISK_ROOM_Q = (
     | Q(residents__troubled_family=True)
     | Q(residents__drug_addiction_register=True)
     | Q(residents__has_complaints=True)
+    | Q(residents__cybersecurity_bot_connected=True)
 )
 SERIOUS_ROOM_Q = (
     Q(residents__previously_convicted=True)
@@ -53,6 +55,7 @@ SERIOUS_ROOM_Q = (
     | Q(residents__troubled_family=True)
     | Q(residents__drug_addiction_register=True)
     | Q(residents__has_complaints=True)
+    | Q(residents__cybersecurity_bot_connected=True)
 )
 SERIOUS_HOUSE_Q = (
     Q(rooms__residents__previously_convicted=True)
@@ -65,6 +68,7 @@ SERIOUS_HOUSE_Q = (
     | Q(rooms__residents__troubled_family=True)
     | Q(rooms__residents__drug_addiction_register=True)
     | Q(rooms__residents__has_complaints=True)
+    | Q(rooms__residents__cybersecurity_bot_connected=True)
 )
 
 RISK_FACTOR_FIELDS = [
@@ -78,6 +82,7 @@ RISK_FACTOR_FIELDS = [
     "troubled_family",
     "drug_addiction_register",
     "has_complaints",
+    "cybersecurity_bot_connected",
 ]
 
 RISK_METRICS = [
@@ -91,6 +96,7 @@ RISK_METRICS = [
     ("troubled_family", "Notinch oila sifatida qayd etilgan xonadonlar", "yellow", "room"),
     ("drug_addiction_register", "Giyohvandlik ro'yxatida turuvchilar", "yellow", "resident"),
     ("has_complaints", "Murojaat tushgan xonadonlar", "yellow", "room"),
+    ("cybersecurity_bot_connected", "Kiberxavfsizlik botiga ulanganlar", "yellow", "resident"),
 ]
 
 
@@ -208,7 +214,7 @@ def dashboard(request):
             ("Jami uylar", stats["total_houses"], "blue"),
             ("Band xonadonlar", stats["occupied_rooms"], "green"),
             ("Bo'sh xonadonlar", stats["empty_rooms"], "red"),
-            ("Jami a'zolar", stats["total_residents"], "blue"),
+            ("Jami fuqarolar", stats["total_residents"], "blue"),
             ("Og'ir nazorat", stats["serious_attention"], "red"),
             ("Ijtimoiy yordam", stats["social_assistance_count"], "blue"),
         ],
@@ -289,7 +295,7 @@ def settings_room_residents(request, pk):
         request,
         "registry/settings_residents.html",
         {
-            "page_title": f"{room.room_number}-xona a'zolari",
+            "page_title": f"{room.room_number}-xona fuqarolari",
             "room": room,
             "residents": residents,
         },
@@ -304,12 +310,12 @@ def resident_create(request, room_pk):
         resident.room = room
         resident.complaint_notes = [note for note in request.POST.getlist("complaint_notes") if note.strip()]
         resident.save()
-        messages.success(request, "A'zo ma'lumotlari qo'shildi.")
+        messages.success(request, "Fuqaro ma'lumotlari qo'shildi.")
         return redirect("registry:settings_room_residents", pk=room.pk)
     return render(
         request,
         "registry/resident_form.html",
-        {"page_title": "A'zo qo'shish", "room": room, "form": form, "resident": None, "complaint_notes_json": "[]"},
+        {"page_title": "Fuqaro qo'shish", "room": room, "form": form, "resident": None, "complaint_notes_json": "[]"},
     )
 
 
@@ -320,13 +326,13 @@ def resident_edit(request, pk):
         resident = form.save(commit=False)
         resident.complaint_notes = [note for note in request.POST.getlist("complaint_notes") if note.strip()]
         resident.save()
-        messages.success(request, "A'zo ma'lumotlari yangilandi.")
+        messages.success(request, "Fuqaro ma'lumotlari yangilandi.")
         return redirect("registry:settings_room_residents", pk=resident.room.pk)
     return render(
         request,
         "registry/resident_form.html",
         {
-            "page_title": "A'zoni tahrirlash",
+            "page_title": "Fuqaroni tahrirlash",
             "room": resident.room,
             "form": form,
             "resident": resident,
@@ -505,7 +511,7 @@ def resident_delete(request, pk):
     room_pk = resident.room.pk
     house_pk = resident.room.house.pk
     resident.delete()
-    messages.success(request, "A'zo o'chirildi.")
+    messages.success(request, "Fuqaro o'chirildi.")
     if request.GET.get("next") == "settings":
         return redirect("registry:settings_room_residents", pk=room_pk)
     return redirect("registry:house_detail", pk=house_pk)
@@ -524,7 +530,7 @@ def stats_api(request):
         "pie": [occupied, empty],
         "pie_labels": ["Band", "Bo'sh"],
         "bar": [House.objects.count(), occupied, empty, residents],
-        "bar_labels": ["Uy", "Band", "Bo'sh", "A'zo"],
+        "bar_labels": ["Uy", "Band", "Bo'sh", "Fuqaro"],
         "line": line,
     })
 
