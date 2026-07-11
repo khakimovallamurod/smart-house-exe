@@ -108,7 +108,7 @@
                         <div class="positive-card warning"><h4>Nogironlik ro'yxatida</h4><p>Ha</p></div>
                         {% endif %}
                         {% if resident.hunting_weapon %}
-                        <div class="positive-card warning"><h4>Ov quroli bor</h4><dl><div><dt>Soni</dt><dd>{{ resident.weapon_count|default:"-" }}</dd></div><div><dt>Markasi</dt><dd>{{ resident.weapon_model|default:"-" }}</dd></div></dl></div>
+                        <div class="positive-card good"><h4>Ov quroli bor</h4><dl><div><dt>Soni</dt><dd>{{ resident.weapon_count|default:"-" }}</dd></div><div><dt>Markasi</dt><dd>{{ resident.weapon_model|default:"-" }}</dd></div></dl></div>
                         {% endif %}
                         {% if resident.drug_addiction_register %}
                         <div class="positive-card warning"><h4>Giyohvandlik ro'yxatida</h4><dl><div><dt>Qachondan beri</dt><dd>{{ resident.drug_addiction_since|default:"-" }}</dd></div></dl></div>

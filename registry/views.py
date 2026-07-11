@@ -94,6 +94,8 @@ RISK_METRICS = [
     ("cybersecurity_bot_connected", "Kiberxavfsizlik botiga ulanganlar", "green", "resident"),
     ("social_conclusion", "Ijtimoiy xulosa berilganlar", "green", "resident"),
     ("joint_conclusion", "Qo'shma xulosa berilganlar", "green", "resident"),
+    ("tenant", "Ijarada turuvchilar", "green", "status"),
+    ("hunting_weapon", "Ov quroli bor xonadonlar", "green", "room"),
 ]
 
 
@@ -108,7 +110,10 @@ def room_risk_factor_count(room):
 def risk_metric_cards(residents):
     cards = []
     for field, label, color, count_type in RISK_METRICS:
-        matching = residents.filter(**{field: True})
+        if count_type == "status":
+            matching = residents.filter(living_status=field)
+        else:
+            matching = residents.filter(**{field: True})
         count = matching.values("room_id").distinct().count() if count_type == "room" else matching.count()
         cards.append({"key": field, "label": label, "color": color, "count": count})
     return cards
@@ -139,8 +144,12 @@ def resident_card_payload(resident):
 
 def risk_people_groups(residents):
     groups = {}
-    for field, label, color, _count_type in RISK_METRICS:
-        people = residents.filter(**{field: True}).select_related("room", "room__house").order_by(
+    for field, label, color, count_type in RISK_METRICS:
+        if count_type == "status":
+            matching = residents.filter(living_status=field)
+        else:
+            matching = residents.filter(**{field: True})
+        people = matching.select_related("room", "room__house").order_by(
             "room__house__house_number",
             "room__entrance_number",
             "room__room_number",
