@@ -70,6 +70,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-s
 .risk-card.red strong { color:#be123c; }
 .risk-card.yellow { border-left:5px solid #f59e0b; }
 .risk-card.yellow strong { color:#b45309; }
+.risk-card.green { border-left:5px solid #059669; }
+.risk-card.green strong { color:#047857; }
 .risk-people-panels { display:block; }
 .risk-people-panel { border:1px solid #e5e7eb; border-radius:12px; background:rgba(255,255,255,.86); padding:1rem; box-shadow:0 16px 34px rgba(15,23,42,.05); }
 .risk-people-head { display:flex; align-items:flex-start; justify-content:space-between; gap:1rem; border-bottom:1px solid #e5e7eb; padding-bottom:.8rem; }
@@ -79,14 +81,11 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-s
 .room-risk-card-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:.75rem; }
 .room-risk-card { min-height:88px; border-radius:10px; border:1px solid #e5e7eb; background:#fff; padding:.85rem; text-align:left; transition:.25s; box-shadow:0 10px 28px rgba(15,23,42,.04); }
 .room-risk-card:hover, .room-risk-card.active { border-color:#3E6AE1; transform:translateY(-1px); box-shadow:0 14px 32px rgba(15,23,42,.08); }
-.room-risk-card span { display:block; color:#393C41; font-size:13px; line-height:1.25; }
-.room-risk-card strong { display:block; margin-top:.5rem; font-size:28px; font-weight:600; line-height:1; }
-.room-risk-card.red { border-left:5px solid #e11d48; }
-.room-risk-card.yellow { border-left:5px solid #f59e0b; }
-.room-risk-card.green { border-left:5px solid #059669; }
-.room-risk-card.red strong { color:#be123c; }
-.room-risk-card.yellow strong { color:#b45309; }
-.room-risk-card.green strong { color:#047857; }
+.room-risk-card span { display:block; color:#111827; font-size:13px; font-weight:700; line-height:1.25; }
+.room-risk-card strong { display:block; margin-top:.5rem; color:#111827; font-size:28px; font-weight:800; line-height:1; }
+.room-risk-card.red { border-color:#fecdd3; border-left:5px solid #e11d48; background:#fee2e2; }
+.room-risk-card.yellow { border-color:#fde68a; border-left:5px solid #f59e0b; background:#fef3c7; }
+.room-risk-card.green { border-color:#bbf7d0; border-left:5px solid #059669; background:#dcfce7; }
 .room-risk-panel { border:1px solid #e5e7eb; border-radius:12px; background:rgba(255,255,255,.86); padding:1rem; box-shadow:0 16px 34px rgba(15,23,42,.05); }
 .room-risk-list { margin-top:1rem; display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:.65rem; }
 .room-risk-row { display:flex; align-items:center; justify-content:space-between; gap:.8rem; border:1px solid #e5e7eb; border-left-width:5px; border-radius:9px; background:#fff; padding:.75rem; }

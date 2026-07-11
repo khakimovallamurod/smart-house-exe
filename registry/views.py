@@ -25,7 +25,6 @@ MEDIUM_RISK_Q = (
     | Q(troubled_family=True)
     | Q(drug_addiction_register=True)
     | Q(has_complaints=True)
-    | Q(cybersecurity_bot_connected=True)
 )
 ATTENTION_Q = HIGH_RISK_Q | MEDIUM_RISK_Q
 SERIOUS_CRIME_Q = ATTENTION_Q
@@ -42,7 +41,6 @@ MEDIUM_RISK_ROOM_Q = (
     | Q(residents__troubled_family=True)
     | Q(residents__drug_addiction_register=True)
     | Q(residents__has_complaints=True)
-    | Q(residents__cybersecurity_bot_connected=True)
 )
 SERIOUS_ROOM_Q = (
     Q(residents__previously_convicted=True)
@@ -55,7 +53,6 @@ SERIOUS_ROOM_Q = (
     | Q(residents__troubled_family=True)
     | Q(residents__drug_addiction_register=True)
     | Q(residents__has_complaints=True)
-    | Q(residents__cybersecurity_bot_connected=True)
 )
 SERIOUS_HOUSE_Q = (
     Q(rooms__residents__previously_convicted=True)
@@ -68,7 +65,6 @@ SERIOUS_HOUSE_Q = (
     | Q(rooms__residents__troubled_family=True)
     | Q(rooms__residents__drug_addiction_register=True)
     | Q(rooms__residents__has_complaints=True)
-    | Q(rooms__residents__cybersecurity_bot_connected=True)
 )
 
 RISK_FACTOR_FIELDS = [
@@ -82,7 +78,6 @@ RISK_FACTOR_FIELDS = [
     "troubled_family",
     "drug_addiction_register",
     "has_complaints",
-    "cybersecurity_bot_connected",
 ]
 
 RISK_METRICS = [
@@ -96,7 +91,9 @@ RISK_METRICS = [
     ("troubled_family", "Notinch oila sifatida qayd etilgan xonadonlar", "yellow", "room"),
     ("drug_addiction_register", "Giyohvandlik ro'yxatida turuvchilar", "yellow", "resident"),
     ("has_complaints", "Murojaat tushgan xonadonlar", "yellow", "room"),
-    ("cybersecurity_bot_connected", "Kiberxavfsizlik botiga ulanganlar", "yellow", "resident"),
+    ("cybersecurity_bot_connected", "Kiberxavfsizlik botiga ulanganlar", "green", "resident"),
+    ("social_conclusion", "Ijtimoiy xulosa berilganlar", "green", "resident"),
+    ("joint_conclusion", "Qo'shma xulosa berilganlar", "green", "resident"),
 ]
 
 
@@ -118,7 +115,8 @@ def risk_metric_cards(residents):
 
 
 def resident_risk_labels(resident):
-    return [label for field, label, _color, _count_type in RISK_METRICS if getattr(resident, field)]
+    risk_fields = set(RISK_FACTOR_FIELDS)
+    return [label for field, label, _color, _count_type in RISK_METRICS if field in risk_fields and getattr(resident, field)]
 
 
 def resident_card_payload(resident):
@@ -175,7 +173,7 @@ def room_risk_summary_groups(rooms):
             "risk_factor_count": risk_factor_count,
             "modal_url": reverse("registry:apartment_info_modal", args=[room.pk]),
         }
-        if risk_factor_count >= 4:
+        if risk_factor_count >= 3:
             groups["red"]["rooms"].append(item)
         elif risk_factor_count > 0:
             groups["yellow"]["rooms"].append(item)
@@ -405,8 +403,8 @@ def house_detail(request, pk):
         for room in entrance_rooms:
             room.risk_factor_count = room_risk_factor_count(room)
         all_house_rooms.extend(entrance_rooms)
-        red_rooms = sum(1 for room in entrance_rooms if room.risk_factor_count >= 4)
-        yellow_rooms = sum(1 for room in entrance_rooms if 0 < room.risk_factor_count < 4)
+        red_rooms = sum(1 for room in entrance_rooms if room.risk_factor_count >= 3)
+        yellow_rooms = sum(1 for room in entrance_rooms if 0 < room.risk_factor_count < 3)
         green_rooms = sum(1 for room in entrance_rooms if room.resident_count and room.risk_factor_count == 0)
         serious_count = house_residents.filter(room__entrance_number=entrance_number).filter(ATTENTION_Q).distinct().count()
         high_count = house_residents.filter(room__entrance_number=entrance_number).filter(HIGH_RISK_Q).distinct().count()

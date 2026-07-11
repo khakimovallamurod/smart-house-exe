@@ -181,7 +181,15 @@
     </section>
 
     <section class="form-section">
-        <div class="form-section-title"><div><h3>12. Murojaatlar</h3><p>Murojaat tushgan bo'lsa sonini kiriting, har biri uchun izoh maydoni ochiladi.</p></div></div>
+        <div class="form-section-title"><div><h3>12. Qidiruvdagi shaxs</h3><p>Xonadonda qidiruvdagi shaxs bo'lsa, izoh kiriting.</p></div></div>
+        <label><span class="label">{{ form.wanted_person.label }}</span>{{ form.wanted_person }}</label>
+        <div class="conditional-fields" data-conditional-for="wanted_person">
+            <label><span class="label">{{ form.wanted_person_note.label }}</span>{{ form.wanted_person_note }}</label>
+        </div>
+    </section>
+
+    <section class="form-section">
+        <div class="form-section-title"><div><h3>13. Murojaatlar</h3><p>Murojaat tushgan bo'lsa sonini kiriting, har biri uchun izoh maydoni ochiladi.</p></div></div>
         <label><span class="label">{{ form.has_complaints.label }}</span>{{ form.has_complaints }}</label>
         <div class="conditional-fields" data-conditional-for="has_complaints">
             <div class="grid gap-3 md:grid-cols-[1fr_auto] md:items-end">
@@ -193,7 +201,7 @@
     </section>
 
     <section class="form-section">
-        <div class="form-section-title"><div><h3>13. Ijtimoiy va qo'shma xulosa</h3><p>Ijtimoiy yoki qo'shma xulosa berilgan bo'lsa, kim tomonidan berilganini, fayl va izohini kiriting.</p></div></div>
+        <div class="form-section-title"><div><h3>14. Ijtimoiy va qo'shma xulosa</h3><p>Ijtimoiy yoki qo'shma xulosa berilgan bo'lsa, kim tomonidan berilganini, fayl va izohini kiriting.</p></div></div>
         <label><span class="label">{{ form.social_conclusion.label }}</span>{{ form.social_conclusion }}</label>
         <div class="conditional-fields grid gap-4 md:grid-cols-2" data-conditional-for="social_conclusion">
             <label><span class="label">{{ form.social_conclusion_provider.label }}</span>{{ form.social_conclusion_provider }}</label>
@@ -210,7 +218,7 @@
     </section>
 
     <section class="form-section">
-        <div class="form-section-title"><div><h3>14. Qo'shimcha izoh</h3></div></div>
+        <div class="form-section-title"><div><h3>15. Qo'shimcha izoh</h3></div></div>
         <label><span class="label">{{ form.notes.label }}</span>{{ form.notes }}</label>
     </section>
 

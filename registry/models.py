@@ -154,10 +154,14 @@ class Resident(models.Model):
         ("member", "A'zo"),
     ]
     RELATIONSHIP_CHOICES = [
-        ("self", "O'zi"),
+        ("self", "Uy egasi"),
+        ("wife", "Xotini"),
         ("son", "O'g'il"),
         ("daughter", "Qiz"),
+        ("grandchild", "Nevarasi"),
         ("mother", "Ona"),
+        ("father_in_law", "Qayni otasi"),
+        ("mother_in_law", "Qayni onasi"),
         ("brother", "Akasi"),
         ("sister", "Opasi"),
         ("friend", "Do'sti"),
@@ -250,6 +254,8 @@ class Resident(models.Model):
     social_assistance_note = models.TextField(blank=True)
     security_panel_connected = models.BooleanField(default=False)
     cybersecurity_bot_connected = models.BooleanField(default=False)
+    wanted_person = models.BooleanField(default=False)
+    wanted_person_note = models.TextField(blank=True)
     has_complaints = models.BooleanField(default=False)
     complaint_count = models.PositiveIntegerField(blank=True, null=True)
     complaint_notes = models.JSONField(default=list, blank=True)

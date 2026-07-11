@@ -190,6 +190,7 @@ class ResidentOwnerForm(StyledModelForm):
         "drug_addiction_since": "Masalan: 2021-yildan beri",
         "social_assistance_note": "Qanday yordamga muhtojligini yozing",
         "origin_neighborhood_conclusion_note": "Fuqaro to'g'risidagi ma'lumotni yozing",
+        "wanted_person_note": "Qidiruvdagi shaxs bo'yicha izoh",
         "complaint_count": "Murojaatlar soni",
         "social_conclusion_provider": "Xulosa kim tomonidan berilgan?",
         "social_conclusion_note": "Ijtimoiy xulosa izohi",
@@ -270,6 +271,8 @@ class ResidentOwnerForm(StyledModelForm):
             "social_assistance_note",
             "security_panel_connected",
             "cybersecurity_bot_connected",
+            "wanted_person",
+            "wanted_person_note",
             "has_complaints",
             "complaint_count",
             "social_conclusion",
@@ -352,6 +355,8 @@ class ResidentOwnerForm(StyledModelForm):
             "social_assistance_note": "Izoh",
             "security_panel_connected": "Xonadonga qo'riqlov pulti o'rnatilganmi?",
             "cybersecurity_bot_connected": "Kiberxavfsizlik bo'yicha botga ulanganmi?",
+            "wanted_person": "Ushbu xonadonda qidiruvdagi shaxs bormi?",
+            "wanted_person_note": "Izoh",
             "has_complaints": "Mazkur xonadondan murojaat tushganmi?",
             "complaint_count": "Murojaatlar soni",
             "social_conclusion": "Ijtimoiy xulosa berilganmi?",
@@ -390,6 +395,7 @@ class ResidentOwnerForm(StyledModelForm):
             "needs_social_assistance": forms.RadioSelect(choices=BOOLEAN_CHOICES),
             "security_panel_connected": forms.RadioSelect(choices=BOOLEAN_CHOICES),
             "cybersecurity_bot_connected": forms.RadioSelect(choices=BOOLEAN_CHOICES),
+            "wanted_person": forms.RadioSelect(choices=BOOLEAN_CHOICES),
             "has_complaints": forms.RadioSelect(choices=BOOLEAN_CHOICES),
             "social_conclusion": forms.RadioSelect(choices=BOOLEAN_CHOICES),
             "joint_conclusion": forms.RadioSelect(choices=BOOLEAN_CHOICES),
@@ -405,6 +411,7 @@ class ResidentOwnerForm(StyledModelForm):
             "social_conclusion_note": forms.Textarea(attrs={"rows": 3}),
             "joint_conclusion_note": forms.Textarea(attrs={"rows": 3}),
             "origin_neighborhood_conclusion_note": forms.Textarea(attrs={"rows": 3}),
+            "wanted_person_note": forms.Textarea(attrs={"rows": 3}),
             "notes": forms.Textarea(attrs={"rows": 3}),
         }
 
@@ -474,6 +481,8 @@ class ResidentOwnerForm(StyledModelForm):
             cleaned["drug_addiction_since"] = ""
         if not cleaned.get("needs_social_assistance"):
             cleaned["social_assistance_note"] = ""
+        if not cleaned.get("wanted_person"):
+            cleaned["wanted_person_note"] = ""
         if not cleaned.get("has_complaints"):
             cleaned["complaint_count"] = None
         if not cleaned.get("social_conclusion"):

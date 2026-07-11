@@ -95,15 +95,8 @@
         </div>
         <div class="apartment-grid">
             {% for room in entrance.rooms %}
-            <button class="apartment-cell {% if room.risk_factor_count >= 4 %}risk-red{% elif room.risk_factor_count > 0 %}risk-yellow{% elif room.resident_count %}risk-green{% else %}empty{% endif %}" type="button" data-modal-url="{% url 'registry:apartment_info_modal' room.pk %}">
+            <button class="apartment-cell {% if room.risk_factor_count >= 3 %}risk-red{% elif room.risk_factor_count > 0 %}risk-yellow{% elif room.resident_count %}risk-green{% else %}empty{% endif %}" type="button" data-modal-url="{% url 'registry:apartment_info_modal' room.pk %}">
                 <strong>{{ room.room_number }}</strong>
-                <span>
-                    {% if room.resident_count %}
-                        {{ room.risk_factor_count }} ta
-                    {% else %}
-                        bo'sh
-                    {% endif %}
-                </span>
             </button>
             {% endfor %}
         </div>
