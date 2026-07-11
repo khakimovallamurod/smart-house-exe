@@ -24,7 +24,20 @@ document.addEventListener("keydown", (event) => {
 document.addEventListener("click", async (event) => {
   const localOpen = event.target.closest("[data-open-local-modal]");
   if (localOpen) {
-    document.getElementById(localOpen.dataset.openLocalModal)?.classList.remove("hidden");
+    const localModal = document.getElementById(localOpen.dataset.openLocalModal);
+    localModal?.classList.remove("hidden");
+    setupFileViewer(localModal);
+    return;
+  }
+  const rotateFile = event.target.closest("[data-rotate-file]");
+  if (rotateFile) {
+    const frame = rotateFile.closest(".file-viewer-panel")?.querySelector("iframe");
+    if (frame) {
+      const rotation = (Number(frame.dataset.rotation || "0") + 90) % 360;
+      frame.dataset.rotation = String(rotation);
+      frame.style.transform = `rotate(${rotation}deg)`;
+      frame.classList.toggle("rotated-sideways", rotation === 90 || rotation === 270);
+    }
     return;
   }
   if (event.target.matches("[data-close-local-modal]") || event.target.closest("[data-close-local-modal]")) {
@@ -127,6 +140,23 @@ document.addEventListener("click", async (event) => {
     totalInput.value = index + 1;
   }
 });
+
+function setupFileViewer(localModal) {
+  const panel = localModal?.querySelector(".file-viewer-panel");
+  if (!panel || panel.querySelector("[data-rotate-file]")) return;
+  const closeButton = panel.querySelector("[data-close-local-modal]");
+  const rotateButton = document.createElement("button");
+  rotateButton.className = "btn-secondary";
+  rotateButton.type = "button";
+  rotateButton.dataset.rotateFile = "";
+  rotateButton.innerHTML = '<i class="bi bi-arrow-clockwise"></i> Rotate';
+  if (closeButton) {
+    const actions = document.createElement("div");
+    actions.className = "modal-viewer-actions";
+    closeButton.replaceWith(actions);
+    actions.append(rotateButton, closeButton);
+  }
+}
 
 function openSwalConfirm(message, onConfirm) {
   const existing = document.getElementById("swal-confirm");
